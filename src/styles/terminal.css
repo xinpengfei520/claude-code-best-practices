@@ -1,0 +1,324 @@
+/* iTerm2 Terminal Styles */
+
+/* Terminal Window */
+.terminal-window {
+  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+  border-radius: 8px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid #3a3a3a;
+}
+
+/* Terminal Header */
+.terminal-header {
+  background: linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%);
+  border-bottom: 1px solid #2a2a2a;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Traffic Light Buttons */
+.traffic-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.traffic-light::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  bottom: 50%;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+}
+
+.traffic-light:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.traffic-light.close {
+  background: linear-gradient(135deg, #ff5f57 0%, #ff3b30 100%);
+}
+
+.traffic-light.minimize {
+  background: linear-gradient(135deg, #ffbd2e 0%, #ff9500 100%);
+}
+
+.traffic-light.maximize {
+  background: linear-gradient(135deg, #28ca42 0%, #30d158 100%);
+}
+
+/* Terminal Content */
+.terminal-content {
+  background: #1e1e1e;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #d4d4d4;
+}
+
+/* Terminal Prompt */
+.terminal-prompt {
+  color: #569cd6;
+  font-weight: 500;
+}
+
+.terminal-path {
+  color: #4ec9b0;
+}
+
+.terminal-symbol {
+  color: #d4d4d4;
+  font-weight: bold;
+}
+
+/* Command Input */
+.command-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #d4d4d4;
+  font-family: inherit;
+  font-size: inherit;
+  width: 100%;
+  caret-color: #00ff00;
+}
+
+/* Cursor Animation */
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: #00ff00;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Typing Animation */
+.typing-animation {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 2s steps(40, end);
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Terminal Output */
+.terminal-output {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.terminal-output.success {
+  color: #4ec9b0;
+}
+
+.terminal-output.error {
+  color: #f44747;
+}
+
+.terminal-output.warning {
+  color: #ffcc02;
+}
+
+.terminal-output.info {
+  color: #569cd6;
+}
+
+/* Command Buttons */
+.terminal-button {
+  background: linear-gradient(135deg, #007acc 0%, #005a9e 100%);
+  border: 1px solid #004578;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.terminal-button:hover {
+  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.terminal-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.terminal-button.success {
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+  border-color: #155724;
+}
+
+.terminal-button.success:hover {
+  background: linear-gradient(135deg, #34ce57 0%, #28a745 100%);
+}
+
+.terminal-button.danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  border-color: #bd2130;
+}
+
+.terminal-button.danger:hover {
+  background: linear-gradient(135deg, #e85d75 0%, #dc3545 100%);
+}
+
+/* Scrollbar Styling */
+.terminal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-content::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+.terminal-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.terminal-content::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+/* Progress Bar */
+.progress-bar {
+  background: linear-gradient(90deg, #00ff00 0%, #00cc00 100%);
+  height: 2px;
+  border-radius: 1px;
+  animation: progress-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes progress-glow {
+  0% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.5); }
+  100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
+}
+
+/* Command History */
+.command-history {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.command-history:hover {
+  opacity: 1;
+}
+
+/* Syntax Highlighting */
+.syntax-command {
+  color: #569cd6;
+  font-weight: 500;
+}
+
+.syntax-flag {
+  color: #ce9178;
+}
+
+.syntax-value {
+  color: #4ec9b0;
+}
+
+.syntax-string {
+  color: #ce9178;
+}
+
+.syntax-comment {
+  color: #6a9955;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .terminal-content {
+    font-size: 12px;
+  }
+  
+  .terminal-button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .traffic-light {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* Dark Theme Enhancements */
+.dark-theme {
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3a3a3a;
+  --text-primary: #d4d4d4;
+  --text-secondary: #9d9d9d;
+  --accent-blue: #569cd6;
+  --accent-green: #4ec9b0;
+  --accent-yellow: #ffcc02;
+  --accent-red: #f44747;
+  --border-color: #404040;
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Focus States */
+.terminal-button:focus,
+.command-input:focus {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}
+
+/* Loading States */
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
