@@ -12,6 +12,12 @@
 
 这是一个交互式的 Claude Code CLI 命令学习教程应用，旨在帮助开发者掌握 Claude Code 的各种命令和最佳实践。通过模拟终端界面和渐进式学习路径，让用户能够系统地学习和练习 Claude Code 的使用。
 
+## ⭐ Star 趋势
+
+[![Star History Chart](https://api.star-history.com/svg?repos=xinpengfei520/claude-code-best-practices&type=Date)](https://star-history.com/#xinpengfei520/claude-code-best-practices&Date)
+
+> 感谢所有为项目点赞的开发者！你们的支持是我们持续改进的动力。
+
 ## ✨ 功能特色
 
 ### 🎯 完整的命令集覆盖
