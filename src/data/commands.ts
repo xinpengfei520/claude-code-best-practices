@@ -21,942 +21,509 @@ export interface CommandCategory {
 }
 
 export const commands: Command[] = [
-  // Basic Commands
+  // ===== Basic Commands (基础命令) =====
   {
     id: 'claude-help',
     name: 'claude --help',
-    description: '显示Claude CLI的帮助信息和可用命令',
-    syntax: 'claude --help [command]',
+    description: '显示 Claude Code 的帮助信息和可用子命令',
+    syntax: 'claude --help',
     example: 'claude --help',
-    output: `Claude CLI - AI Assistant Command Line Interface
+    output: `Usage: claude [options] [prompt]
 
-Usage: claude [options] [command]
+Claude Code - agentic coding in your terminal
 
 Commands:
-  chat        Start an interactive chat session
-  generate    Generate code or text
-  analyze     Analyze files or code
-  config      Manage configuration settings
+  claude                 启动交互式会话
+  claude "task"          运行一次性任务
+  config                 管理配置
+  mcp                    配置 MCP 服务器
+  update                 更新到最新版本
+  doctor                 诊断安装与配置
 
 Options:
-  --help      Show help information
-  --version   Show version number
-  --verbose   Enable verbose output`,
+  -p, --print            非交互模式输出后退出
+  -c, --continue         继续最近的会话
+  -r, --resume           恢复指定会话
+  --model <name>         选择模型
+  --help                 显示帮助
+  --version              显示版本`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '总是先查看帮助信息了解可用选项',
-      '使用 --help 获取特定命令的详细信息',
-      '定期检查新功能和更新'
+      '先查看帮助了解可用子命令与选项',
+      '不确定某个标志时随时查阅',
+      '配合 /help 查看交互模式内的斜杠命令'
     ],
     commonMistakes: [
-      '忘记查看帮助就直接使用命令',
-      '不了解命令的完整语法'
+      '不看帮助凭印象拼凑命令',
+      '混淆 CLI 标志与交互模式斜杠命令'
     ],
-    relatedCommands: ['claude --version', 'claude config']
+    relatedCommands: ['claude --version', '/help']
   },
   {
     id: 'claude-version',
     name: 'claude --version',
-    description: '显示当前Claude CLI的版本信息',
+    description: '显示当前 Claude Code 的版本号',
     syntax: 'claude --version',
     example: 'claude --version',
-    output: 'Claude CLI v2.1.0\nBuild: 2024.01.15\nAPI Version: 3.0',
+    output: `2.0.x (Claude Code)`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '定期检查版本确保使用最新功能',
-      '在报告问题时提供版本信息',
-      '升级前备份重要配置'
+      '反馈问题时附上版本号',
+      '定期更新以获得新功能',
+      '升级前留意变更说明'
     ],
     commonMistakes: [
-      '使用过时版本导致功能缺失',
-      '不检查兼容性就升级'
+      '长期不更新导致缺失新特性',
+      '报告问题时不提供版本信息'
     ],
-    relatedCommands: ['claude --help', 'claude update']
-  },
-  {
-    id: 'claude-config-list',
-    name: 'claude config list',
-    description: '列出当前的配置设置',
-    syntax: 'claude config list [--format json|table]',
-    example: 'claude config list',
-    output: `Configuration Settings:
-┌─────────────────┬──────────────────────────────┐
-│ Setting         │ Value                        │
-├─────────────────┼──────────────────────────────┤
-│ api_key         │ sk-ant-*********************  │
-│ model           │ claude-3-sonnet-20240229     │
-│ max_tokens      │ 4096                         │
-│ temperature     │ 0.7                          │
-│ output_format   │ markdown                     │
-└─────────────────┴──────────────────────────────┘`,
-    category: 'basic',
-    difficulty: 'beginner',
-    bestPractices: [
-      '定期检查配置确保设置正确',
-      '使用表格格式便于阅读',
-      '保护敏感信息如API密钥'
-    ],
-    commonMistakes: [
-      '暴露完整的API密钥',
-      '忘记检查配置导致意外行为'
-    ],
-    relatedCommands: ['claude config set', 'claude config get']
+    relatedCommands: ['claude update', '/doctor']
   },
   {
     id: 'claude-interactive',
     name: 'claude',
-    description: '启动Claude Code交互模式',
+    description: '启动 Claude Code 交互模式',
     syntax: 'claude',
     example: 'claude',
-    output: `Claude Code Interactive Mode
-Version: 2.1.0
+    output: `Welcome to Claude Code!
 
-Welcome to Claude Code! Type your commands or questions.
-Type '/help' for available commands, 'exit' to quit.
+输入你的需求，或用 / 触发斜杠命令。
+Shift+Tab 切换权限模式，Esc 中断，Ctrl+C 退出。
 
-> `,
+>`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '使用交互模式进行复杂的多轮对话',
-      '利用上下文进行连续的代码开发',
-      '定期保存重要的对话内容'
+      '复杂多轮开发优先用交互模式',
+      '善用上下文进行连续迭代',
+      '用 @ 引用文件、用 / 调用命令'
     ],
     commonMistakes: [
-      '忘记保存重要的交互会话',
-      '不利用上下文连续性'
+      '简单一次性查询也开交互模式',
+      '不利用上下文连续性反复重述'
     ],
-    relatedCommands: ['claude -c', 'claude -r', '/help']
+    relatedCommands: ['claude -c', 'claude -r']
   },
   {
     id: 'claude-task',
     name: 'claude "task"',
     description: '运行一次性任务',
-    syntax: 'claude "[task description]"',
+    syntax: 'claude "[任务描述]"',
     example: 'claude "fix the build error"',
     output: `Analyzing build error...
 
 Found issue in package.json:
 - Missing dependency: @types/react
 
-Suggested fix:
-npm install @types/react --save-dev
+Applying fix:
+  npm install --save-dev @types/react
 
-Task completed successfully.`,
+✅ Build passes.`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
       '提供清晰具体的任务描述',
-      '使用双引号包围任务内容',
+      '用双引号包裹任务内容',
       '验证任务执行结果'
     ],
     commonMistakes: [
       '任务描述过于模糊',
-      '忘记使用引号包围任务'
+      '忘记用引号包裹任务'
     ],
-    relatedCommands: ['claude -p', 'claude generate']
+    relatedCommands: ['claude -p "query"', 'claude']
   },
   {
     id: 'claude-query',
     name: 'claude -p "query"',
-    description: '运行一次性查询，然后退出',
-    syntax: 'claude -p "[query]"',
+    description: '非交互模式运行一次查询后退出，适合脚本',
+    syntax: 'claude -p "[查询]"',
     example: 'claude -p "explain this function"',
-    output: `Query: explain this function
+    output: `This function is a React component that:
+1. 用 useState 管理状态
+2. 绑定事件处理用户交互
+3. 返回 JSX 进行渲染
 
-This function appears to be a React component that:
-1. Uses useState hook for state management
-2. Implements event handlers for user interactions
-3. Returns JSX elements for rendering
-
-Key features:
-- Functional component pattern
-- Hook-based state management
-- Event-driven architecture
-
-Query completed.`,
+适合在脚本或管道中获取单次结果。`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '使用-p参数进行快速查询',
-      '提供具体的查询内容',
-      '适用于单次信息获取'
+      '用于脚本化、自动化的单次查询',
+      '配合 --output-format json 便于程序解析',
+      '提供具体的查询内容'
     ],
     commonMistakes: [
-      '查询内容不够具体',
-      '在需要多轮对话时使用单次查询'
+      '需要多轮对话时却用单次查询',
+      '查询内容不够具体'
     ],
-    relatedCommands: ['claude', 'claude "task"']
+    relatedCommands: ['claude --output-format', 'claude --print']
   },
   {
     id: 'claude-continue',
     name: 'claude -c',
-    description: '继续最近的对话',
+    description: '在当前目录继续最近的一次对话',
     syntax: 'claude -c',
     example: 'claude -c',
-    output: `Resuming conversation from session: sess_20240115_143022
-Last message: "Can you help me optimize this React component?"
+    output: `Resuming most recent session in this directory...
 
-Continuing where we left off...
+Last topic: optimizing a React component
+Loaded 15 messages
 
-> I can help you optimize that React component. Let me review the code we were discussing.`,
+> 我们接着上次的优化继续。`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '用于恢复中断的对话',
-      '保持对话的连续性',
-      '确保会话已正确保存'
+      '用于恢复被中断的工作',
+      '在项目目录内使用以匹配正确会话',
+      '保持上下文连续'
     ],
     commonMistakes: [
-      '没有保存的会话无法继续',
-      '混淆不同的对话会话'
+      '在错误的目录中使用',
+      '没有最近会话时使用'
     ],
-    relatedCommands: ['claude -r', 'claude chat --save']
+    relatedCommands: ['claude -r', 'claude --continue']
   },
   {
-    id: 'claude-restore',
+    id: 'claude-resume',
     name: 'claude -r',
-    description: '恢复之前的对话',
-    syntax: 'claude -r [session_id]',
+    description: '从历史会话列表中选择并恢复',
+    syntax: 'claude -r [会话ID]',
     example: 'claude -r',
     output: `Available sessions:
-1. sess_20240115_143022 - React optimization (2 hours ago)
-2. sess_20240115_120045 - Python debugging (5 hours ago)
-3. sess_20240114_165530 - API integration (1 day ago)
+1. React optimization      (2 hours ago)
+2. Python debugging        (5 hours ago)
+3. API integration         (1 day ago)
 
-Select session (1-3): 1
+Select session: 1
 
-Restoring session: React optimization
-Loaded 15 messages, 2,847 tokens
-
-> Welcome back! We were working on optimizing your React component.`,
+Restored. Loaded 15 messages.
+> Welcome back!`,
     category: 'basic',
     difficulty: 'intermediate',
     bestPractices: [
-      '定期查看可用的会话',
-      '使用描述性的会话名称',
-      '清理过期的会话文件'
+      '定期查看可恢复的会话',
+      '为长期任务挑选正确的会话',
+      '清理不再需要的会话'
     ],
     commonMistakes: [
-      '会话文件管理混乱',
-      '恢复错误的会话'
+      '恢复了错误的会话',
+      '会话过多难以辨认'
     ],
-    relatedCommands: ['claude -c', 'claude chat --list']
-  },
-  {
-    id: 'claude-commit',
-    name: 'claude commit',
-    description: '创建Git提交',
-    syntax: 'claude commit [--message "commit message"]',
-    example: 'claude commit',
-    output: `Analyzing staged changes...
-
-Files to commit:
-  modified: src/components/Header.tsx
-  modified: src/styles/main.css
-  new file: src/utils/helpers.ts
-
-Generated commit message:
-"feat: add responsive header component with utility helpers
-
-- Implement mobile-responsive navigation
-- Add CSS utilities for consistent styling
-- Create helper functions for common operations"
-
-Commit created: a1b2c3d
-Pushed to origin/main`,
-    category: 'basic',
-    difficulty: 'intermediate',
-    bestPractices: [
-      '确保代码已暂存到Git',
-      '让Claude生成语义化的提交信息',
-      '检查提交内容的准确性'
-    ],
-    commonMistakes: [
-      '提交前未暂存文件',
-      '不检查生成的提交信息'
-    ],
-    relatedCommands: ['git add', 'git status']
+    relatedCommands: ['claude -c', 'claude --resume']
   },
   {
     id: 'clear-command',
     name: '/clear',
-    description: '清除对话历史',
+    description: '清空当前对话上下文，开始全新会话',
     syntax: '/clear',
     example: '/clear',
-    output: `Conversation history cleared.
-Starting fresh session...
+    output: `Conversation cleared. Starting fresh.
 
-> Hello! How can I help you today?`,
+> 有什么可以帮你？`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '在开始新主题前清除历史',
-      '保护敏感信息不被保留',
-      '定期清理以提高性能'
+      '切换到全新主题前清空',
+      '上下文塞满且无需保留时使用',
+      '需要保留要点时改用 /compact'
     ],
     commonMistakes: [
-      '清除前未保存重要内容',
-      '频繁清除导致上下文丢失'
+      '清空前丢失了仍需要的上下文',
+      '该用 /compact 时却用了 /clear'
     ],
-    relatedCommands: ['claude chat --save', '/help']
+    relatedCommands: ['/compact', '/context']
   },
   {
     id: 'help-command',
     name: '/help',
-    description: '显示可用命令',
-    syntax: '/help [command]',
+    description: '在交互模式中列出可用的斜杠命令',
+    syntax: '/help',
     example: '/help',
-    output: `Available Commands:
+    output: `Slash commands:
 
-Basic Commands:
-  claude              Start interactive mode
-  claude "task"       Run one-time task
-  claude -p "query"   Quick query and exit
-  claude -c           Continue recent conversation
-  claude -r           Restore previous conversation
-  claude commit       Create Git commit
+  /init         生成 CLAUDE.md
+  /agents       管理子代理
+  /compact      压缩对话
+  /context      查看上下文占用
+  /model        切换模型
+  /config       设置
+  /permissions  权限规则
+  /review       审查 PR
+  /rewind       回退检查点
+  /clear        清空对话
+  /help         显示此帮助
 
-Session Commands:
-  /clear              Clear conversation history
-  /help               Show this help message
-  /save [filename]    Save current session
-  /load [filename]    Load saved session
-
-Navigation:
-  exit, Ctrl+C        Exit Claude Code
-
-For detailed help on a specific command, use: /help [command]`,
+输入 / 可查看全部命令。`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '经常查看帮助了解新功能',
-      '使用具体命令获取详细帮助',
-      '熟悉所有可用命令'
+      '不熟悉时先用 /help 浏览命令',
+      '关注新加入的命令',
+      '区分 CLI 标志与斜杠命令'
     ],
     commonMistakes: [
-      '不查看帮助就使用命令',
-      '忽略命令的可选参数'
+      '不知道有哪些命令而手动重复劳动',
+      '忽略命令的参数'
     ],
     relatedCommands: ['claude --help', '/clear']
   },
   {
     id: 'exit-command',
     name: 'exit',
-    description: '退出Claude Code',
-    syntax: 'exit 或 Ctrl+C',
+    description: '退出 Claude Code（也可用 Ctrl+C）',
+    syntax: 'exit',
     example: 'exit',
-    output: `Saving session...
-Session saved to: ~/.claude/sessions/sess_20240115_143022.json
-
-Thank you for using Claude Code!
+    output: `Session saved.
 Goodbye! 👋`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '使用exit命令正常退出',
-      '确保重要会话已保存',
-      '检查是否有未完成的任务'
+      '正常退出以保存会话',
+      '退出前确认无未完成任务',
+      '需要时可用 -c/-r 恢复'
     ],
     commonMistakes: [
-      '强制关闭导致会话丢失',
-      '退出前未保存重要内容'
+      '强制关闭终端导致会话异常',
+      '退出前未确认改动已保存'
     ],
-    relatedCommands: ['claude chat --save', '/clear']
-  },
-  {    id: 'claude-update',    name: 'claude update',    description: '更新Claude CLI到最新版本',    syntax: 'claude update',    example: 'claude update',    output: `Checking for updates...
-
-Current version: 2.1.0
-Latest version: 2.2.0
-
-Downloading update...
-████████████████████████████████ 100%
-
-Update completed successfully!
-Claude CLI updated to version 2.2.0
-
-Changelog:
-- Improved performance
-- Added new MCP support
-- Bug fixes and stability improvements
-
-Restart your terminal to use the new version.`,    category: 'basic',    difficulty: 'beginner',    bestPractices: [      '定期检查和安装更新',      '更新前备份重要配置',      '阅读更新日志了解新功能'    ],    commonMistakes: [      '长期不更新导致功能缺失',      '不备份配置直接更新'    ],    relatedCommands: ['claude --version', 'claude --help']  },  {    id: 'claude-mcp',    name: 'claude mcp',    description: '配置模型上下文协议(MCP)服务器',    syntax: 'claude mcp [subcommand] [options]',    example: 'claude mcp list',    output: `MCP Server Configuration
-
-Available servers:
-┌─────────────────┬──────────────┬─────────────┐
-│ Name            │ Status       │ Version     │
-├─────────────────┼──────────────┼─────────────┤
-│ filesystem      │ ✅ Active    │ 1.0.2       │
-│ git             │ ✅ Active    │ 0.9.1       │
-│ database        │ ❌ Inactive  │ 1.1.0       │
-└─────────────────┴──────────────┴─────────────┘
-
-Commands:
-  claude mcp list     - List all MCP servers
-  claude mcp enable   - Enable MCP server
-  claude mcp disable  - Disable MCP server
-  claude mcp config   - Configure MCP settings`,    category: 'basic',    difficulty: 'intermediate',    bestPractices: [      '定期检查MCP服务器状态',      '只启用需要的MCP服务器',      '了解每个服务器的功能'    ],    commonMistakes: [      '启用过多不必要的服务器',      '不了解服务器权限范围'    ],    relatedCommands: ['claude config', 'claude --allowedTools']  },  {    id: 'claude-allowed-tools',    name: 'claude --allowedTools',    description: '指定允许的工具列表，无需用户许可',    syntax: 'claude --allowedTools "tool1" "tool2" ...',    example: 'claude --allowedTools "Bash(git log:*)" "Bash(git diff:*)" "Read"',    output: `Configuring allowed tools...
-
-✅ Allowed tools configured:
-- Bash(git log:*) - Git log operations
-- Bash(git diff:*) - Git diff operations  
-- Read - File reading operations
-
-These tools will execute without permission prompts.
-
-Starting session with pre-approved tools...`,    category: 'flags',    difficulty: 'advanced',    bestPractices: [      '只允许安全的工具操作',      '使用通配符模式限制范围',      '定期审查允许的工具列表'    ],    commonMistakes: [      '允许过于宽泛的工具权限',      '不了解工具的安全影响'    ],    relatedCommands: ['claude --disallowedTools', 'claude --add-dir']  },  {    id: 'claude-disallowed-tools',    name: 'claude --disallowedTools',    description: '指定禁止的工具列表',    syntax: 'claude --disallowedTools "tool1" "tool2" ...',    example: 'claude --disallowedTools "Bash(rm:*)" "Edit" "Delete"',    output: `Configuring disallowed tools...
-
-🚫 Disallowed tools configured:
-- Bash(rm:*) - File deletion operations
-- Edit - File editing operations
-- Delete - File deletion operations
-
-These tools are blocked and will not be available.
-
-Starting session with tool restrictions...`,    category: 'flags',    difficulty: 'advanced',    bestPractices: [      '禁止危险的操作工具',      '使用通配符模式精确控制',      '平衡安全性和功能性'    ],    commonMistakes: [      '禁止过多必要工具',      '不测试工具限制效果'    ],    relatedCommands: ['claude --allowedTools', 'claude --permission-mode']  },  {    id: 'claude-append-system-prompt',    name: 'claude --append-system-prompt',    description: '附加到系统提示(仅与--print一起使用)',    syntax: 'claude --append-system-prompt "custom instruction" -p "query"',    example: 'claude --append-system-prompt "Always respond in JSON format" -p "analyze this code"',    output: `System prompt configured with custom instruction:
-"Always respond in JSON format"
-
-Query: analyze this code
-
-{
-  "analysis": {
-    "language": "JavaScript",
-    "complexity": "medium",
-    "issues": [
-      {
-        "type": "performance",
-        "description": "Inefficient loop structure",
-        "line": 15
-      }
-    ],
-    "suggestions": [
-      "Use array methods for better performance",
-      "Add error handling"
-    ]
-  }
-}`,    category: 'flags',    difficulty: 'intermediate',    bestPractices: [      '仅在打印模式下使用',      '提供清晰的自定义指令',      '测试指令对输出的影响'    ],    commonMistakes: [      '在交互模式下使用',      '指令与查询内容冲突'    ],    relatedCommands: ['claude -p', 'claude --output-format']  },  {    id: 'claude-output-format',    name: 'claude --output-format',    description: '为打印模式指定输出格式',    syntax: 'claude -p "query" --output-format [text|json|stream-json]',    example: 'claude -p "analyze this function" --output-format json',    output: `{
-  "query": "analyze this function",
-  "analysis": {
-    "function_name": "calculateTotal",
-    "parameters": ["items", "taxRate"],
-    "return_type": "number",
-    "complexity": "low",
-    "performance": "good",
-    "suggestions": [
-      "Add input validation",
-      "Consider memoization for large datasets"
-    ]
-  },
-  "timestamp": "2024-01-15T14:30:22Z"
-}`,    category: 'flags',    difficulty: 'intermediate',    bestPractices: [      '选择适合用途的输出格式',      '使用JSON格式便于程序处理',      '流式JSON适用于实时处理'    ],    commonMistakes: [      '格式选择与用途不匹配',      '不处理JSON解析错误'    ],    relatedCommands: ['claude -p', 'claude --input-format']  },  {    id: 'claude-verbose',    name: 'claude --verbose',    description: '启用详细日志记录，显示完整的轮次输出',    syntax: 'claude --verbose [other options]',    example: 'claude --verbose -p "debug this issue"',    output: `🔍 Verbose mode enabled
-
-[DEBUG] Session started at 2024-01-15T14:30:22Z
-[DEBUG] Model: claude-3-sonnet-20240229
-[DEBUG] Max tokens: 4096
-[DEBUG] Temperature: 0.7
-
-[TURN 1] User input: "debug this issue"
-[DEBUG] Input tokens: 4
-[DEBUG] Processing time: 1.2s
-
-[TURN 1] Assistant response:
-I'll help you debug this issue. Let me analyze the problem...
-
-[DEBUG] Output tokens: 156
-[DEBUG] Total tokens used: 160
-[DEBUG] Session duration: 3.4s
-
-✅ Query completed successfully`,    category: 'flags',    difficulty: 'beginner',    bestPractices: [      '用于调试和性能分析',      '监控token使用情况',      '分析响应时间'    ],    commonMistakes: [      '在生产环境中启用详细模式',      '忽略性能指标信息'    ],    relatedCommands: ['claude -p', 'claude --max-turns']  },  {    id: 'claude-model',    name: 'claude --model',    description: '为当前会话设置模型',    syntax: 'claude --model [sonnet|opus|model-name]',    example: 'claude --model claude-sonnet-4-20250514',    output: `Model configuration updated:
-
-🤖 Selected model: claude-sonnet-4-20250514
-📊 Model capabilities:
-- Context length: 200K tokens
-- Multimodal: Yes (text, images)
-- Code generation: Advanced
-- Reasoning: Enhanced
-
-✅ Session started with selected model
-
-> Hello! I'm Claude Sonnet. How can I help you today?`,    category: 'flags',    difficulty: 'intermediate',    bestPractices: [      '选择适合任务的模型',      '了解不同模型的能力',      '考虑成本和性能平衡'    ],    commonMistakes: [      '使用过于强大的模型处理简单任务',      '不了解模型的限制'    ],    relatedCommands: ['claude --verbose', 'claude config']  },  {    id: 'claude-add-dir',    name: 'claude --add-dir',    description: '添加额外的工作目录供Claude访问',    syntax: 'claude --add-dir <directory1> [directory2] ...',    example: 'claude --add-dir ../apps ../lib',    output: `Adding additional directories...
-
-✅ Added: /project/apps (verified as directory)
-✅ Added: /project/lib (verified as directory)
-
-Claude now has access to:
-- Current directory: /project/current
-- Additional directories:
-  - /project/apps
-  - /project/lib
-
-Starting interactive session with expanded access...`,
-    category: 'flags',
-    difficulty: 'intermediate',
-    bestPractices: [
-      '验证目录路径存在',
-      '只添加必要的目录',
-      '使用相对路径保持可移植性'
-    ],
-    commonMistakes: [
-      '添加不存在的目录',
-      '添加过多目录影响性能',
-      '添加敏感目录造成安全风险'
-    ],
-    relatedCommands: ['claude config', 'claude --allowedTools']
+    relatedCommands: ['claude -c', '/clear']
   },
   {
     id: 'claude-update',
     name: 'claude update',
-    description: '更新Claude Code到最新版本',
-    syntax: 'claude update [--check-only]',
+    description: '更新 Claude Code 到最新版本',
+    syntax: 'claude update',
     example: 'claude update',
     output: `Checking for updates...
 
-Current version: 1.2.3
-Latest version: 1.3.0
-
-Downloading update...
-✅ Update downloaded
+✅ Downloaded latest version
 ✅ Installation complete
 
-Claude Code has been updated to version 1.3.0
 Restart your terminal to use the new version.`,
     category: 'basic',
     difficulty: 'beginner',
     bestPractices: [
-      '定期检查更新',
-      '在更新前备份重要配置',
-      '阅读更新日志了解新功能'
+      '定期更新获取新功能与修复',
+      '更新后重启终端',
+      '留意变更说明'
     ],
     commonMistakes: [
-      '网络连接问题导致更新失败',
-      '更新后不重启终端'
+      '更新后不重启终端',
+      '长期不更新'
     ],
-    relatedCommands: ['claude --version', 'claude --help']
+    relatedCommands: ['claude --version', '/doctor']
   },
   {
     id: 'claude-mcp',
     name: 'claude mcp',
-    description: '配置模型上下文协议(MCP)服务器',
-    syntax: 'claude mcp [configure|list|add|remove] [options]',
-    example: 'claude mcp configure',
-    output: `MCP Configuration
+    description: '从命令行配置 MCP（模型上下文协议）服务器',
+    syntax: 'claude mcp [add|list|remove] [options]',
+    example: 'claude mcp list',
+    output: `Configured MCP servers:
 
-Available MCP servers:
-1. filesystem - File system operations
-2. git - Git repository management
-3. database - Database connections
-4. web - Web scraping and API calls
+  filesystem   ✅ connected   (stdio)
+  github       ✅ connected   (stdio)
+  database     ⚠️  not started
 
-Select servers to enable (1-4, comma separated): 1,2
-
-Configuring MCP servers...
-✅ filesystem server configured
-✅ git server configured
-
-MCP setup completed!
-Restart Claude to apply changes.`,
+Manage in-session with /mcp.`,
     category: 'basic',
-    difficulty: 'advanced',
+    difficulty: 'intermediate',
     bestPractices: [
-      '只启用需要的MCP服务器',
-      '定期检查MCP服务器状态',
-      '了解每个服务器的功能'
+      '只连接可信的服务器',
+      '用 /mcp 检查连接与鉴权',
+      '按项目/用户范围管理配置'
     ],
     commonMistakes: [
-      '启用过多不必要的服务器',
-      '不了解MCP服务器的安全影响'
+      '连接来源不明的服务器',
+      '启用过多不必要的服务器'
     ],
-    relatedCommands: ['claude config', 'claude --help']
+    relatedCommands: ['MCP 服务器', '/mcp']
   },
   {
     id: 'claude-continue-sdk',
     name: 'claude -c -p "query"',
-    description: '通过SDK继续对话并执行查询',
-    syntax: 'claude -c -p "[query]"',
+    description: '非交互地继续上次会话并执行一次查询',
+    syntax: 'claude -c -p "[查询]"',
     example: 'claude -c -p "Check for type errors"',
     output: `Continuing previous conversation...
-Session: sess_20240115_143022
 
-Executing query: "Check for type errors"
+Running: Check for type errors
 
-Analyzing TypeScript files...
+Found 2 type errors:
+- src/utils/helpers.ts:8  类型不匹配
+- src/pages/Home.tsx:22   可能为 undefined
 
-Found 3 type errors:
-1. src/components/Header.tsx:15 - Property 'title' is missing
-2. src/utils/helpers.ts:8 - Type 'string' is not assignable to 'number'
-3. src/pages/Home.tsx:22 - Object is possibly 'undefined'
-
-Suggested fixes:
-- Add title prop to Header component
-- Update helper function return type
-- Add null check for object access
-
-Query completed.`,
+建议已给出，查询完成。`,
     category: 'basic',
     difficulty: 'intermediate',
     bestPractices: [
-      '确保有活跃的对话会话',
+      '在脚本中链接上一次会话上下文',
       '提供具体的查询内容',
-      '验证查询结果的准确性'
+      '验证结果准确性'
     ],
     commonMistakes: [
-      '没有活跃会话时使用此命令',
+      '没有可继续的会话时使用',
       '查询内容过于模糊'
     ],
-    relatedCommands: ['claude -c', 'claude -p', 'claude -r']
+    relatedCommands: ['claude -c', 'claude -p "query"']
   },
   {
     id: 'claude-restore-session',
-    name: 'claude -r "<session-id>" "query"',
-    description: '通过ID恢复特定会话并执行查询',
-    syntax: 'claude -r "[session-id]" "[query]"',
+    name: 'claude -r "<id>" "query"',
+    description: '通过会话 ID 恢复指定会话并执行一次查询',
+    syntax: 'claude -r "[会话ID]" "[查询]"',
     example: 'claude -r "abc123" "Finish this PR"',
     output: `Restoring session: abc123
-Session title: "React component optimization"
-Loaded 12 messages, 1,847 tokens
+Loaded 12 messages
 
-Executing query: "Finish this PR"
+Running: Finish this PR
 
-Analyzing current PR status...
-
-PR Summary:
-- 5 files changed
-- 2 tests passing
-- 1 test failing
-
-Remaining tasks:
-1. Fix failing test in Header.test.tsx
-2. Update documentation
-3. Add type definitions
-
-Generating fixes...
-✅ Test fixed
-✅ Documentation updated
-✅ Types added
+- 修复了失败的测试
+- 更新了文档
+- 补充了类型定义
 
 PR is ready for review!`,
     category: 'basic',
     difficulty: 'intermediate',
     bestPractices: [
-      '使用正确的会话ID',
+      '使用正确的会话 ID',
       '提供清晰的任务描述',
-      '验证会话恢复是否成功'
+      '确认会话恢复成功'
     ],
     commonMistakes: [
-      '使用错误或过期的会话ID',
-      '任务描述不够具体'
+      '使用过期或错误的会话 ID',
+      '任务描述不具体'
     ],
-    relatedCommands: ['claude -r', 'claude -c', 'claude chat --list']
+    relatedCommands: ['claude -r', 'claude --resume']
   },
 
-  // Chat Commands
-  {
-    id: 'claude-chat',
-    name: 'claude chat',
-    description: '启动交互式聊天会话',
-    syntax: 'claude chat [--model model_name] [--system system_prompt]',
-    example: 'claude chat --model claude-3-sonnet',
-    output: `Starting Claude chat session...
-Model: claude-3-sonnet-20240229
-Type 'exit' to quit, 'help' for commands
-
-> Hello! I'm Claude, an AI assistant. How can I help you today?`,
-    category: 'chat',
-    difficulty: 'beginner',
-    bestPractices: [
-      '选择适合任务的模型',
-      '使用清晰的系统提示',
-      '保存重要的对话内容'
-    ],
-    commonMistakes: [
-      '使用错误的模型导致性能问题',
-      '没有设置合适的系统提示'
-    ],
-    relatedCommands: ['claude chat --save', 'claude chat --load']
-  },
-  {
-    id: 'claude-chat-save',
-    name: 'claude chat --save',
-    description: '保存当前聊天会话到文件',
-    syntax: 'claude chat --save [filename]',
-    example: 'claude chat --save my-session.json',
-    output: `Chat session saved to: my-session.json
-Session ID: sess_abc123
-Messages: 15
-Tokens used: 2,847`,
-    category: 'chat',
-    difficulty: 'intermediate',
-    bestPractices: [
-      '使用描述性的文件名',
-      '定期保存重要对话',
-      '组织会话文件到合适的目录'
-    ],
-    commonMistakes: [
-      '忘记保存重要对话',
-      '覆盖已有的会话文件'
-    ],
-    relatedCommands: ['claude chat --load', 'claude chat --list']
-  },
-
-  // Code Generation
-  {
-    id: 'claude-generate',
-    name: 'claude generate',
-    description: '生成代码或文本内容',
-    syntax: 'claude generate [--type code|text] [--language lang] [--output file]',
-    example: 'claude generate --type code --language python "Create a function to calculate fibonacci"',
-    output: `def fibonacci(n):
-    """Calculate the nth Fibonacci number."""
-    if n <= 1:
-        return n
-    return fibonacci(n-1) + fibonacci(n-2)
-
-# Example usage
-print(fibonacci(10))  # Output: 55`,
-    category: 'generation',
-    difficulty: 'intermediate',
-    bestPractices: [
-      '提供清晰的需求描述',
-      '指定目标编程语言',
-      '验证生成的代码'
-    ],
-    commonMistakes: [
-      '需求描述不够清晰',
-      '不验证生成代码的正确性'
-    ],
-    relatedCommands: ['claude analyze', 'claude review']
-  },
-
-  // File Analysis
-  {
-    id: 'claude-analyze',
-    name: 'claude analyze',
-    description: '分析文件或代码结构',
-    syntax: 'claude analyze [file|directory] [--type security|performance|style]',
-    example: 'claude analyze src/main.py --type security',
-    output: `Security Analysis Report for src/main.py
-
-✅ No critical security issues found
-⚠️  2 warnings detected:
-
-1. Line 23: Potential SQL injection vulnerability
-   - Use parameterized queries instead of string concatenation
-   
-2. Line 45: Hardcoded API key detected
-   - Move sensitive data to environment variables
-
-Recommendations:
-- Implement input validation
-- Use environment variables for secrets
-- Consider using an ORM for database operations`,
-    category: 'analysis',
-    difficulty: 'advanced',
-    bestPractices: [
-      '定期进行安全分析',
-      '关注性能瓶颈',
-      '遵循代码风格指南'
-    ],
-    commonMistakes: [
-      '忽略安全警告',
-      '不定期进行代码审查'
-    ],
-    relatedCommands: ['claude review', 'claude fix']
-  },
-
-  // CLI Flags Commands
+  // ===== CLI Flags (CLI 标志) =====
   {
     id: 'claude-add-dir',
     name: 'claude --add-dir',
-    description: '添加额外的工作目录供Claude访问',
-    syntax: 'claude --add-dir [directory1] [directory2] ...',
+    description: '为 Claude 添加额外可访问的工作目录',
+    syntax: 'claude --add-dir <dir1> [dir2] ...',
     example: 'claude --add-dir ../apps ../lib',
-    output: `Adding directories to Claude workspace...
+    output: `Adding directories...
 
-✅ ../apps - Directory added successfully
-✅ ../lib - Directory added successfully
+✅ ../apps
+✅ ../lib
 
-Claude now has access to:
-- /current/project
-- /current/apps
-- /current/lib
-
-Total files accessible: 247
-Starting interactive session...`,
+Claude 现在可访问当前目录及以上目录。`,
     category: 'flags',
     difficulty: 'intermediate',
     bestPractices: [
       '只添加必要的目录',
-      '验证目录路径的正确性',
-      '注意文件访问权限'
+      '确认目录路径存在',
+      '注意访问范围与安全'
     ],
     commonMistakes: [
-      '添加过多不相关的目录',
-      '路径不存在或无权限访问'
+      '添加不存在的目录',
+      '添加过多目录或敏感目录'
     ],
-    relatedCommands: ['claude config', 'claude --verbose']
+    relatedCommands: ['/add-dir', 'claude --allowedTools']
   },
   {
     id: 'claude-allowed-tools',
     name: 'claude --allowedTools',
-    description: '指定允许的工具列表',
-    syntax: 'claude --allowedTools "[tool1]" "[tool2]" ...',
-    example: 'claude --allowedTools "Bash(git log:*)" "Bash(git diff:*)" "Read"',
-    output: `Configuring allowed tools...
+    description: '指定无需确认即可使用的工具列表',
+    syntax: 'claude --allowedTools "tool1" "tool2" ...',
+    example: 'claude --allowedTools "Bash(git log:*)" "Read"',
+    output: `Allowed tools:
+✅ Bash(git log:*)
+✅ Read
 
-Allowed tools:
-✅ Bash(git log:*) - Git log operations
-✅ Bash(git diff:*) - Git diff operations  
-✅ Read - File reading operations
-
-Restricted tools:
-❌ Edit - File editing disabled
-❌ Bash(*) - Other bash commands disabled
-
-Security mode: Restricted
-Starting session with limited tool access...`,
+这些工具将不再弹出权限确认。`,
     category: 'flags',
     difficulty: 'advanced',
     bestPractices: [
-      '明确指定需要的工具',
-      '使用通配符模式匹配',
-      '定期审查工具权限'
+      '只允许安全的操作',
+      '用通配符精确限定范围',
+      '定期审查允许列表'
     ],
     commonMistakes: [
-      '权限设置过于宽泛',
-      '忘记包含必要的工具'
+      '允许范围过于宽泛',
+      '不了解工具的安全影响'
     ],
-    relatedCommands: ['claude --disallowedTools', 'claude --permission-mode']
+    relatedCommands: ['claude --disallowedTools', '/permissions']
   },
   {
     id: 'claude-disallowed-tools',
     name: 'claude --disallowedTools',
-    description: '指定禁止的工具列表',
-    syntax: 'claude --disallowedTools "[tool1]" "[tool2]" ...',
-    example: 'claude --disallowedTools "Bash(rm:*)" "Edit" "Delete"',
-    output: `Configuring disallowed tools...
+    description: '指定被禁止使用的工具列表',
+    syntax: 'claude --disallowedTools "tool1" "tool2" ...',
+    example: 'claude --disallowedTools "Bash(rm:*)" "Edit"',
+    output: `Disallowed tools:
+🚫 Bash(rm:*)
+🚫 Edit
 
-Disallowed tools:
-❌ Bash(rm:*) - File deletion commands blocked
-❌ Edit - File editing blocked
-❌ Delete - File deletion blocked
-
-Allowed tools:
-✅ Read - File reading enabled
-✅ Bash(git:*) - Git commands enabled
-✅ Search - Code search enabled
-
-Security mode: Enhanced
-Starting session with restricted tool access...`,
+这些工具将被阻止使用。`,
     category: 'flags',
     difficulty: 'advanced',
     bestPractices: [
-      '明确禁止危险操作',
-      '使用通配符阻止命令类别',
-      '保持安全和功能的平衡'
+      '禁止危险操作',
+      '用通配符阻止整类命令',
+      '平衡安全与可用性'
     ],
     commonMistakes: [
-      '禁止过多必要工具',
-      '安全设置过于严格影响功能'
+      '禁止了必要工具影响效率',
+      '不测试限制效果'
     ],
-    relatedCommands: ['claude --allowedTools', 'claude --permission-mode']
+    relatedCommands: ['claude --allowedTools', '/permissions']
   },
   {
     id: 'claude-append-system-prompt',
     name: 'claude --append-system-prompt',
-    description: '附加到系统提示(仅与--print一起使用)',
-    syntax: 'claude --append-system-prompt "[custom instruction]" -p "[query]"',
-    example: 'claude --append-system-prompt "Always provide TypeScript examples" -p "Create a React component"',
-    output: `System prompt updated with custom instruction.
+    description: '向系统提示追加自定义指令（与 -p 配合）',
+    syntax: 'claude --append-system-prompt "[指令]" -p "[查询]"',
+    example: 'claude --append-system-prompt "Always respond in JSON" -p "analyze this code"',
+    output: `System prompt appended.
 
-Query: Create a React component
-
-Here's a TypeScript React component example:
-
-\`\`\`typescript
-import React from 'react';
-
-interface ButtonProps {
-  label: string;
-  onClick: () => void;
-  variant?: 'primary' | 'secondary';
-}
-
-const Button: React.FC<ButtonProps> = ({ 
-  label, 
-  onClick, 
-  variant = 'primary' 
-}) => {
-  return (
-    <button 
-      className={\`btn btn-\${variant}\`}
-      onClick={onClick}
-    >
-      {label}
-    </button>
-  );
-};
-
-export default Button;
-\`\`\``,
+{
+  "language": "JavaScript",
+  "issues": [
+    { "type": "performance", "line": 15 }
+  ],
+  "suggestions": ["use array methods", "add error handling"]
+}`,
     category: 'flags',
     difficulty: 'intermediate',
     bestPractices: [
-      '提供清晰的自定义指令',
-      '与-p参数结合使用',
-      '测试自定义提示的效果'
+      '与 -p 打印模式配合使用',
+      '指令清晰、聚焦',
+      '验证对输出的影响'
     ],
     commonMistakes: [
-      '不与-p参数一起使用',
-      '自定义指令过于复杂'
+      '指令与查询冲突',
+      '指令过于复杂'
     ],
-    relatedCommands: ['claude -p', 'claude --output-format']
+    relatedCommands: ['claude -p "query"', 'claude --output-format']
   },
   {
     id: 'claude-output-format',
     name: 'claude --output-format',
     description: '为打印模式指定输出格式',
-    syntax: 'claude -p "[query]" --output-format [text|json|stream-json]',
-    example: 'claude -p "List project files" --output-format json',
+    syntax: 'claude -p "[查询]" --output-format [text|json|stream-json]',
+    example: 'claude -p "analyze this function" --output-format json',
     output: `{
-  "response": {
-    "content": "Here are the project files:",
-    "files": [
-      {
-        "name": "package.json",
-        "type": "file",
-        "size": "1.2KB"
-      },
-      {
-        "name": "src/",
-        "type": "directory",
-        "children": 15
-      },
-      {
-        "name": "README.md",
-        "type": "file",
-        "size": "3.4KB"
-      }
-    ]
-  },
-  "metadata": {
-    "timestamp": "2024-01-15T14:30:22Z",
-    "tokens_used": 156
+  "query": "analyze this function",
+  "analysis": {
+    "complexity": "low",
+    "suggestions": ["add input validation"]
   }
 }`,
     category: 'flags',
     difficulty: 'intermediate',
     bestPractices: [
-      '选择适合的输出格式',
-      '与自动化脚本集成时使用JSON',
-      '验证输出格式的正确性'
+      '与自动化集成时用 json',
+      '实时处理用 stream-json',
+      '处理好解析错误'
     ],
     commonMistakes: [
-      '格式选择不当影响解析',
-      '不处理JSON格式的错误'
+      '格式与用途不匹配',
+      '不处理 JSON 解析失败'
     ],
-    relatedCommands: ['claude -p', 'claude --input-format']
+    relatedCommands: ['claude --input-format', 'claude -p "query"']
   },
   {
     id: 'claude-input-format',
@@ -966,228 +533,142 @@ export default Button;
     example: 'claude -p --input-format stream-json --output-format json',
     output: `Reading stream-json input...
 
-Input processed:
-- 3 messages received
-- 247 tokens processed
-- Context established
-
-Generating JSON response...
-
 {
   "status": "success",
-  "processed_messages": 3,
-  "response": {
-    "content": "Input stream processed successfully",
-    "context_tokens": 247
-  }
+  "processed_messages": 3
 }`,
     category: 'flags',
     difficulty: 'advanced',
     bestPractices: [
-      '确保输入格式匹配',
-      '验证JSON输入的有效性',
-      '处理流式输入的错误'
+      '确保输入格式与实际数据一致',
+      '校验 JSON 有效性',
+      '处理流式输入错误'
     ],
     commonMistakes: [
-      '输入格式不匹配',
-      '无效的JSON输入'
+      '声明格式与数据不符',
+      '无效的 JSON 输入'
     ],
-    relatedCommands: ['claude --output-format', 'claude -p']
+    relatedCommands: ['claude --output-format', 'claude -p "query"']
   },
   {
     id: 'claude-verbose',
     name: 'claude --verbose',
-    description: '启用详细日志记录，显示完整的轮次输出',
-    syntax: 'claude --verbose [other options]',
-    example: 'claude --verbose -p "analyze code"',
-    output: `[DEBUG] Starting Claude CLI v2.1.0
-[DEBUG] Loading configuration from ~/.claude/config.json
-[DEBUG] API endpoint: https://api.anthropic.com/v1/messages
-[DEBUG] Model: claude-3-sonnet-20240229
-[DEBUG] Max tokens: 4096
+    description: '启用详细日志，显示完整的逐轮输出',
+    syntax: 'claude --verbose [其它选项]',
+    example: 'claude --verbose -p "debug this issue"',
+    output: `🔍 Verbose mode enabled
 
-[INFO] Processing query: "analyze code"
-[DEBUG] Scanning directory: /current/project
-[DEBUG] Found 23 files to analyze
-[DEBUG] Processing file: src/main.ts
-[DEBUG] Token count: 156/4096
+[DEBUG] Model: opus
+[TURN 1] Input: "debug this issue"
+[DEBUG] Processing time: 1.2s
+[DEBUG] Output tokens: 156
 
-Code Analysis Results:
-✅ No syntax errors found
-⚠️  2 style issues detected
-📊 Complexity score: 7/10
-
-[DEBUG] Response generated in 2.3s
-[DEBUG] Total tokens used: 342
-[INFO] Analysis completed successfully`,
+✅ Completed`,
     category: 'flags',
-    difficulty: 'intermediate',
+    difficulty: 'beginner',
     bestPractices: [
-      '用于调试和故障排除',
-      '监控API使用情况',
+      '用于调试与排查',
+      '观察 token 与耗时',
       '了解处理流程'
     ],
     commonMistakes: [
-      '在生产环境中启用详细日志',
-      '忽略日志中的警告信息'
+      '在正常使用中始终开启',
+      '忽略日志中的告警'
     ],
-    relatedCommands: ['claude -p', 'claude --max-turns']
+    relatedCommands: ['claude --max-turns', '/debug']
   },
   {
     id: 'claude-max-turns',
     name: 'claude --max-turns',
-    description: '在非交互模式下限制代理轮次数量',
-    syntax: 'claude -p --max-turns [number] "[query]"',
+    description: '在非交互模式下限制代理的最大轮次',
+    syntax: 'claude -p --max-turns [n] "[查询]"',
     example: 'claude -p --max-turns 3 "fix build errors"',
-    output: `Max turns set to: 3
+    output: `Max turns: 3
 
-Turn 1/3: Analyzing build errors...
-Found 2 TypeScript errors in src/components/
+Turn 1/3: 分析错误
+Turn 2/3: 应用修复
+Turn 3/3: 验证通过 ✅
 
-Turn 2/3: Applying fixes...
-✅ Fixed missing import in Header.tsx
-✅ Fixed type annotation in Button.tsx
-
-Turn 3/3: Verifying fixes...
-✅ Build successful
-✅ All tests passing
-
-Task completed in 3 turns.
-Build errors resolved successfully!`,
+Done in 3 turns.`,
     category: 'flags',
     difficulty: 'intermediate',
     bestPractices: [
-      '设置合理的轮次限制',
-      '用于控制复杂任务的范围',
-      '监控每轮的进度'
+      '为自动化任务设置合理上限',
+      '控制成本与范围',
+      '监控每轮进度'
     ],
     commonMistakes: [
-      '轮次设置过少导致任务未完成',
-      '不监控轮次使用情况'
+      '上限过低导致任务未完成',
+      '不监控轮次使用'
     ],
-    relatedCommands: ['claude -p', 'claude --verbose']
+    relatedCommands: ['claude -p "query"', 'claude --verbose']
   },
   {
     id: 'claude-model',
     name: 'claude --model',
-    description: '为当前会话设置模型',
-    syntax: 'claude --model [sonnet|opus|model-name]',
-    example: 'claude --model claude-sonnet-4-20250514',
-    output: `Setting model for current session...
+    description: '为本次会话选择模型',
+    syntax: 'claude --model [opus|sonnet|haiku|model-id]',
+    example: 'claude --model opus',
+    output: `Model: Opus 4.8
 
-Model: claude-sonnet-4-20250514
-Capabilities:
-- Advanced reasoning
-- Code generation
-- Multi-language support
-- Context length: 200K tokens
+- 最强推理，适合复杂任务
+- 200K 上下文，支持多模态
 
-✅ Model configured successfully
-Starting session with Claude Sonnet 4...`,
+✅ Session started.`,
     category: 'flags',
     difficulty: 'beginner',
     bestPractices: [
-      '选择适合任务的模型',
-      '了解不同模型的特点',
-      '考虑成本和性能平衡'
+      '按任务难度选择模型',
+      '可用别名（opus/sonnet/haiku）',
+      '权衡成本与能力'
     ],
     commonMistakes: [
-      '使用过于强大的模型处理简单任务',
-      '不了解模型的限制'
+      '强模型处理琐碎任务浪费成本',
+      '弱模型处理复杂任务导致返工'
     ],
-    relatedCommands: ['claude --help', 'claude config']
+    relatedCommands: ['/model', '扩展思考']
   },
   {
     id: 'claude-permission-mode',
     name: 'claude --permission-mode',
-    description: '在指定的权限模式下开始',
-    syntax: 'claude --permission-mode [plan|ask|auto]',
+    description: '以指定的权限模式启动',
+    syntax: 'claude --permission-mode [default|acceptEdits|plan|bypassPermissions]',
     example: 'claude --permission-mode plan',
-    output: `Permission mode set to: plan
+    output: `Permission mode: plan
 
-In plan mode:
-- Claude will describe actions before executing
-- User approval required for each step
-- Enhanced security for sensitive operations
-
-Starting session...
-
-> I'll help you with your request. Before making any changes, I'll outline my plan and ask for your approval.`,
+Claude 会先给出方案、获批后再动手，
+不会直接修改文件。`,
     category: 'flags',
     difficulty: 'advanced',
     bestPractices: [
-      '在敏感项目中使用plan模式',
-      '了解不同权限模式的影响',
-      '根据任务选择合适的模式'
+      '高风险改动用 plan 模式',
+      '可信环境批量改动用 acceptEdits',
+      '了解各模式的边界'
     ],
     commonMistakes: [
-      '在自动化脚本中使用ask模式',
-      '不了解权限模式的限制'
+      '在不该自动化的场景用 bypassPermissions',
+      '不了解模式差异'
     ],
-    relatedCommands: ['claude --allowedTools', 'claude --disallowedTools']  },  {    id: 'claude-input-format',    name: 'claude --input-format',    description: '指定输入数据的格式',    syntax: 'claude --input-format [text|json] -p "query"',    example: 'echo "{\"task\": \"analyze\"}" | claude --input-format json -p "process this data"',    output: `Processing JSON input...
-
-📊 Input data parsed:
-{
-  "task": "analyze"
-}
-
-🔍 Analysis results:
-The input contains a task specification requesting analysis. This appears to be a structured request for data processing or examination.
-
-✅ JSON input processed successfully`,    category: 'flags',    difficulty: 'intermediate',    bestPractices: [      '确保输入格式与数据匹配',      '验证JSON格式的有效性',      '处理格式解析错误'    ],    commonMistakes: [      '格式声明与实际数据不符',      '不处理格式错误'    ],    relatedCommands: ['claude --output-format', 'claude -p']  },  {    id: 'claude-max-turns',    name: 'claude --max-turns',    description: '设置对话的最大轮次数',    syntax: 'claude --max-turns <number>',    example: 'claude --max-turns 5',    output: `Session configuration updated:
-
-🔄 Max turns: 5
-⚠️  Session will automatically end after 5 exchanges
-
-✅ Interactive session started with turn limit
-
-> Hello! I'm Claude. We have 5 turns for this conversation. How can I help you?`,    category: 'flags',    difficulty: 'beginner',    bestPractices: [      '根据任务复杂度设置合理轮次',      '考虑成本控制',      '为复杂任务预留足够轮次'    ],    commonMistakes: [      '轮次设置过少导致任务未完成',      '不考虑对话的自然流程'    ],    relatedCommands: ['claude --verbose', 'claude -c']  },  {    id: 'claude-print',    name: 'claude --print',    description: '等同于 -p，运行一次性查询并打印结果',    syntax: 'claude --print "query"',    example: 'claude --print "what is the current time format in ISO 8601?"',    output: `ISO 8601 is an international standard for date and time representation. The format is:
-
-📅 Basic format: YYYY-MM-DDTHH:mm:ss.sssZ
-
-Examples:
-- 2024-01-15T14:30:22.123Z (UTC)
-- 2024-01-15T14:30:22+08:00 (with timezone)
-- 2024-01-15T14:30:22 (local time)
-
-🔍 Components:
-- YYYY: 4-digit year
-- MM: 2-digit month (01-12)
-- DD: 2-digit day (01-31)
-- T: separator between date and time
-- HH: 2-digit hour (00-23)
-- mm: 2-digit minute (00-59)
-- ss: 2-digit second (00-59)
-- sss: milliseconds (optional)
-- Z: UTC timezone indicator
-
-✅ This format ensures unambiguous date/time representation across systems.`,    category: 'flags',    difficulty: 'beginner',    bestPractices: [      '用于快速查询',      '适合脚本和自动化',      '结合输出格式使用'    ],    commonMistakes: [      '与 -p 混用造成困惑',      '不了解两者完全等价'    ],    relatedCommands: ['claude -p', 'claude --output-format']  },
+    relatedCommands: ['计划模式', '/permissions']
+  },
   {
     id: 'claude-permission-prompt-tool',
     name: 'claude --permission-prompt-tool',
-    description: '指定一个MCP工具来处理非交互模式下的权限提示',
-    syntax: 'claude -p --permission-prompt-tool [tool_name] "[query]"',
-    example: 'claude -p --permission-prompt-tool mcp_auth_tool "deploy to production"',
-    output: `Permission prompt tool: mcp_auth_tool
+    description: '指定一个 MCP 工具来处理非交互模式下的权限提示',
+    syntax: 'claude -p --permission-prompt-tool [tool] "[查询]"',
+    example: 'claude -p --permission-prompt-tool mcp_auth "deploy to staging"',
+    output: `Permission tool: mcp_auth
 
-Query: deploy to production
+🔐 Authorization requested...
+✅ Granted
 
-Calling permission tool for authorization...
-🔐 MCP Auth Tool activated
-📋 Deployment request logged
-✅ Authorization granted by admin
-
-Proceeding with deployment...
-🚀 Deploying to production environment
-✅ Deployment completed successfully
-📊 Status: Live
-🔗 URL: https://app.example.com`,
+Proceeding with deploy to staging...`,
     category: 'flags',
     difficulty: 'advanced',
     bestPractices: [
-      '配置适当的权限工具',
-      '确保工具正确处理授权',
-      '记录权限请求和批准'
+      '配置可靠的权限处理工具',
+      '记录授权请求与结果',
+      '用于自动化流水线'
     ],
     commonMistakes: [
       '权限工具配置错误',
@@ -1198,372 +679,978 @@ Proceeding with deployment...
   {
     id: 'claude-resume-flag',
     name: 'claude --resume',
-    description: '通过ID恢复特定会话，或在交互模式下选择',
-    syntax: 'claude --resume [session_id] "[query]"',
+    description: '通过 ID 恢复指定会话（-r 的完整写法）',
+    syntax: 'claude --resume [会话ID] "[查询]"',
     example: 'claude --resume abc123 "continue development"',
     output: `Resuming session: abc123
-Session: "React component refactoring"
 Last activity: 2 hours ago
-Messages: 18
 
-Query: continue development
-
-Continuing where we left off...
-Previous context: Refactoring Header component
-
-Next steps:
-1. ✅ Extract reusable hooks
-2. 🔄 Optimize re-renders
-3. ⏳ Add unit tests
-
-Let's continue with render optimization...`,
+继续之前的开发...
+下一步：优化重渲染、补充单元测试。`,
     category: 'flags',
     difficulty: 'intermediate',
     bestPractices: [
-      '使用正确的会话ID',
-      '提供上下文相关的查询',
-      '验证会话恢复状态'
+      '使用正确的会话 ID',
+      '提供与上下文相关的查询',
+      '确认恢复状态'
     ],
     commonMistakes: [
-      '使用过期的会话ID',
-      '查询与会话上下文不匹配'
+      '使用过期的会话 ID',
+      '查询与会话上下文不符'
     ],
-    relatedCommands: ['claude -r', 'claude -c']
+    relatedCommands: ['claude -r', '/resume']
   },
   {
     id: 'claude-continue-flag',
     name: 'claude --continue',
-    description: '在当前目录中加载最近的对话',
+    description: '在当前目录加载最近的对话（-c 的完整写法）',
     syntax: 'claude --continue',
     example: 'claude --continue',
-    output: `Loading recent conversation in current directory...
+    output: `Loading recent conversation here...
 
-Found session: sess_20240115_143022
-Project: /current/project
-Last activity: 30 minutes ago
-Messages: 12
-
-Session summary:
-- Working on TypeScript migration
-- Fixed 8/10 type errors
-- Remaining: interface definitions
-
-Continuing conversation...
-
-> Welcome back! Let's finish the TypeScript migration. We still need to define interfaces for the remaining components.`,
+Found session, last activity 30 min ago.
+> Welcome back! 我们继续 TypeScript 迁移。`,
     category: 'flags',
     difficulty: 'beginner',
     bestPractices: [
       '在项目目录中使用',
-      '确保有最近的会话',
-      '检查会话相关性'
+      '确保存在最近会话',
+      '确认会话相关性'
     ],
     commonMistakes: [
-      '在错误的目录中使用',
+      '在错误目录使用',
       '没有最近会话时使用'
     ],
-    relatedCommands: ['claude -c', 'claude --resume']  },  {    id: 'claude-session-list',    name: 'claude session list',    description: '列出所有保存的会话',    syntax: 'claude session list [--recent] [--project]',    example: 'claude session list --recent 10',    output: `📋 Recent Sessions (10 most recent):
+    relatedCommands: ['claude -c', 'claude --resume']
+  },
+  {
+    id: 'claude-print',
+    name: 'claude --print',
+    description: '等同于 -p，运行一次查询并打印结果',
+    syntax: 'claude --print "[查询]"',
+    example: 'claude --print "what is ISO 8601?"',
+    output: `ISO 8601 是日期时间的国际标准格式：
 
-┌─────────────┬──────────────────────────────┬─────────────────────┬──────────┐
-│ Session ID  │ Title                        │ Last Activity       │ Messages │
-├─────────────┼──────────────────────────────┼─────────────────────┼──────────┤
-│ abc123      │ React component refactoring  │ 2 hours ago         │ 18       │
-│ def456      │ TypeScript migration         │ 1 day ago           │ 25       │
-│ ghi789      │ API endpoint optimization    │ 2 days ago          │ 12       │
-│ jkl012      │ Database schema design       │ 3 days ago          │ 31       │
-│ mno345      │ CSS grid layout              │ 1 week ago          │ 8        │
-└─────────────┴──────────────────────────────┴─────────────────────┴──────────┘
+  YYYY-MM-DDTHH:mm:ssZ
+  例如 2026-06-24T14:30:22Z (UTC)
 
-💡 Use 'claude --resume <session_id>' to continue a session
-💡 Use 'claude session delete <session_id>' to remove a session`,    category: 'chat',    difficulty: 'beginner',    bestPractices: [      '定期查看会话列表',      '使用描述性的会话标题',      '清理过期的会话'    ],    commonMistakes: [      '会话过多导致管理困难',      '不删除无用的会话'    ],    relatedCommands: ['claude --resume', 'claude session delete']  },  {    id: 'claude-session-delete',    name: 'claude session delete',    description: '删除指定的会话',    syntax: 'claude session delete <session_id> [--force]',    example: 'claude session delete abc123',    output: `🗑️  Deleting session: abc123
-
-Session details:
-- Title: "React component refactoring"
-- Created: 3 days ago
-- Messages: 18
-- Size: 2.3KB
-
-⚠️  Are you sure you want to delete this session? (y/N): y
-
-✅ Session abc123 deleted successfully
-💾 Freed 2.3KB of storage space
-
-💡 Tip: Use --force flag to skip confirmation`,    category: 'chat',    difficulty: 'beginner',    bestPractices: [      '确认删除前检查会话内容',      '定期清理无用会话',      '备份重要会话'    ],    commonMistakes: [      '误删重要会话',      '不使用确认提示'    ],    relatedCommands: ['claude session list', 'claude session backup']  },  {    id: 'claude-session-rename',    name: 'claude session rename',    description: '重命名会话标题',    syntax: 'claude session rename <session_id> "<new_title>"',    example: 'claude session rename abc123 "Header Component Optimization"',    output: `📝 Renaming session: abc123
-
-Current title: "React component refactoring"
-New title: "Header Component Optimization"
-
-✅ Session renamed successfully
-
-📋 Updated session info:
-- Session ID: abc123
-- Title: "Header Component Optimization"
-- Last activity: 2 hours ago
-- Messages: 18
-
-💡 Use descriptive titles to easily identify sessions later`,    category: 'chat',    difficulty: 'beginner',    bestPractices: [      '使用描述性的标题',      '包含项目或功能名称',      '避免过长的标题'    ],    commonMistakes: [      '标题过于简单或模糊',      '不及时更新标题'    ],    relatedCommands: ['claude session list', 'claude --resume']  },  {    id: 'claude-session-export',    name: 'claude session export',    description: '导出会话到文件',    syntax: 'claude session export <session_id> [--format json|markdown] [--output file]',    example: 'claude session export abc123 --format markdown --output session.md',    output: `📤 Exporting session: abc123
-
-Session: "Header Component Optimization"
-Format: Markdown
-Output: session.md
-
-Exporting conversation...
-✅ Exported 18 messages
-✅ Included code blocks and attachments
-✅ Generated table of contents
-
-📄 File saved: ./session.md (15.2KB)
-
-📋 Export summary:
-- Messages: 18
-- Code blocks: 12
-- Images: 2
-- Total size: 15.2KB
-
-💡 Use JSON format for programmatic processing`,    category: 'chat',    difficulty: 'intermediate',    bestPractices: [      '选择合适的导出格式',      '包含完整的上下文',      '定期备份重要会话'    ],    commonMistakes: [      '导出格式选择不当',      '忘记包含附件'    ],    relatedCommands: ['claude session list', 'claude session import']  },
+适合脚本与自动化场景。`,
+    category: 'flags',
+    difficulty: 'beginner',
+    bestPractices: [
+      '用于快速、脚本化查询',
+      '与 --output-format 配合',
+      '清楚它与 -p 完全等价'
+    ],
+    commonMistakes: [
+      '与 -p 混用造成困惑',
+      '在需要多轮时使用'
+    ],
+    relatedCommands: ['claude -p "query"', 'claude --output-format']
+  },
   {
     id: 'claude-dangerously-skip-permissions',
     name: 'claude --dangerously-skip-permissions',
-    description: '跳过权限提示(谨慎使用)',
-    syntax: 'claude --dangerously-skip-permissions [other options]',
-    example: 'claude --dangerously-skip-permissions -p "automated deployment"',
-    output: `⚠️  WARNING: Permission checks disabled
-🚨 This mode bypasses all security prompts
+    description: '跳过所有权限确认（等同 bypassPermissions，谨慎使用）',
+    syntax: 'claude --dangerously-skip-permissions [其它选项]',
+    example: 'claude --dangerously-skip-permissions -p "run CI fixes"',
+    output: `⚠️  WARNING: 所有权限确认已禁用
 
-Query: automated deployment
+正在无确认执行任务...
+✅ Done
 
-Executing without permission checks...
-🔄 Starting deployment process
-📦 Building application
-🚀 Deploying to server
-✅ Deployment completed
-
-⚠️  Remember to re-enable permission checks for interactive use`,
+仅在隔离/可信环境中使用此模式。`,
     category: 'flags',
     difficulty: 'advanced',
     bestPractices: [
-      '仅在自动化脚本中使用',
-      '确保环境安全',
-      '使用后重新启用权限检查'
+      '仅在隔离/可信环境的自动化中使用',
+      '确保操作可回退',
+      '严格限制使用范围'
     ],
     commonMistakes: [
-      '在交互模式中使用',
-      '忘记重新启用权限检查',
+      '在日常交互中使用',
       '在不安全环境中使用'
     ],
-    relatedCommands: ['claude --permission-mode', 'claude --allowedTools']
+    relatedCommands: ['claude --permission-mode', '/permissions']
   },
 
-  // Pipeline Commands
+  // ===== Pipeline Commands (管道命令) =====
   {
     id: 'cat-pipe-claude',
     name: 'cat file | claude -p "query"',
-    description: '处理管道内容',
-    syntax: 'cat [file] | claude -p "[query]"',
+    description: '把文件内容通过管道交给 Claude 处理',
+    syntax: 'cat [file] | claude -p "[查询]"',
     example: 'cat logs.txt | claude -p "explain errors"',
-    output: `Reading piped content from logs.txt...
-Content size: 2.3KB
-Lines processed: 156
-
-Query: explain errors
-
-Analyzing log file...
+    output: `Reading piped content (156 lines)...
 
 Error Summary:
-🔴 3 Critical errors found:
-
-1. Line 45: Database connection timeout
-   - Cause: Network latency spike
-   - Solution: Increase connection timeout
-
-2. Line 78: Memory allocation failed
-   - Cause: Insufficient heap space
-   - Solution: Increase JVM memory settings
-
-3. Line 134: Authentication token expired
-   - Cause: Token TTL exceeded
-   - Solution: Implement token refresh logic
-
-Recommendations:
-- Monitor database connection pool
-- Optimize memory usage patterns
-- Implement proper token management`,
+🔴 Line 45: 数据库连接超时 → 增大超时时间
+🔴 Line 78: 内存分配失败 → 提高堆内存
+🔴 Line 134: 令牌过期 → 实现刷新逻辑`,
     category: 'pipeline',
     difficulty: 'intermediate',
     bestPractices: [
-      '验证文件内容格式',
       '提供具体的分析查询',
-      '处理大文件时注意性能'
+      '注意大文件的性能',
+      '确认文件内容格式'
     ],
     commonMistakes: [
-      '管道传输过大的文件',
-      '查询内容不够具体'
+      '管道传输过大文件',
+      '查询不够具体'
     ],
-    relatedCommands: ['claude -p', 'claude analyze']  },  {    id: 'echo-pipe-claude',    name: 'echo "text" | claude -p "query"',    description: '处理文本输入的管道操作',    syntax: 'echo "[text]" | claude -p "[query]"',    example: 'echo "function add(a, b) { return a + b; }" | claude -p "review this code"',    output: `Reading piped text input...
-Content: "function add(a, b) { return a + b; }"
+    relatedCommands: ['echo "text" | claude -p "query"', 'claude -p "query"']
+  },
+  {
+    id: 'echo-pipe-claude',
+    name: 'echo "text" | claude -p "query"',
+    description: '把一段文本通过管道交给 Claude',
+    syntax: 'echo "[文本]" | claude -p "[查询]"',
+    example: 'echo "function add(a,b){return a+b}" | claude -p "review this"',
+    output: `Reviewing piped code...
 
-Query: review this code
+✅ 逻辑正确
+💡 建议：补充 JSDoc、加入类型与边界校验`,
+    category: 'pipeline',
+    difficulty: 'beginner',
+    bestPractices: [
+      '用双引号包裹文本',
+      '给出明确的分析指令',
+      '注意特殊字符转义'
+    ],
+    commonMistakes: [
+      '忘记转义特殊字符',
+      '文本过长触及命令行限制'
+    ],
+    relatedCommands: ['cat file | claude -p "query"', 'claude -p "query"']
+  },
+  {
+    id: 'git-diff-pipe-claude',
+    name: 'git diff | claude -p "query"',
+    description: '把 Git 差异通过管道交给 Claude 分析',
+    syntax: 'git diff [options] | claude -p "[查询]"',
+    example: 'git diff HEAD~1 | claude -p "summarize changes"',
+    output: `Reading git diff (3 files, +45/-12)...
 
-🔍 Code Review Results:
+📊 改动摘要：
+- Header.tsx：新增响应式导航
+- globals.css：移动端媒体查询
+- package.json：依赖升级
 
-✅ **Strengths:**
-- Simple and clear function purpose
-- Proper parameter naming
-- Correct return statement
+整体符合最佳实践 ✅`,
+    category: 'pipeline',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '指定具体的 diff 范围',
+      '结合明确的分析需求',
+      '注意 diff 输出大小'
+    ],
+    commonMistakes: [
+      'diff 输出过大',
+      '不指定提交范围'
+    ],
+    relatedCommands: ['/code-review', 'claude -p "query"']
+  },
+  {
+    id: 'ls-pipe-claude',
+    name: 'ls -la | claude -p "query"',
+    description: '把目录列表通过管道交给 Claude 分析',
+    syntax: 'ls [options] | claude -p "[查询]"',
+    example: 'ls -la src/ | claude -p "analyze project structure"',
+    output: `Reading directory listing...
 
-💡 **Suggestions:**
-- Add JSDoc documentation
-- Consider type checking (TypeScript)
-- Add input validation for edge cases
+📁 结构分析：
+- components/  组件（组织良好）
+- hooks/       自定义 Hook
+- utils/       工具函数
 
-📝 **Improved version:**
-\`\`\`javascript
-/**
- * Adds two numbers together
- * @param {number} a - First number
- * @param {number} b - Second number
- * @returns {number} Sum of a and b
- */
-function add(a, b) {
-  if (typeof a !== 'number' || typeof b !== 'number') {
-    throw new Error('Both parameters must be numbers');
+💡 建议新增 __tests__/ 放单元测试`,
+    category: 'pipeline',
+    difficulty: 'beginner',
+    bestPractices: [
+      '选择合适的目录与 ls 选项',
+      '给出结构化的分析指令',
+      '聚焦特定目录'
+    ],
+    commonMistakes: [
+      '分析根目录导致输出过多',
+      '指令不明确'
+    ],
+    relatedCommands: ['cat file | claude -p "query"', 'claude -p "query"']
+  },
+  {
+    id: 'curl-pipe-claude',
+    name: 'curl url | claude -p "query"',
+    description: '把 HTTP 响应通过管道交给 Claude 分析',
+    syntax: 'curl [options] [url] | claude -p "[查询]"',
+    example: 'curl -s https://api.github.com/users/octocat | claude -p "explain this response"',
+    output: `Reading HTTP response (200 OK, JSON)...
+
+🌐 响应解析：
+- 用户：octocat
+- 公开仓库：8
+- 这是 GitHub REST API v3
+
+未认证请求限速：60 次/小时。`,
+    category: 'pipeline',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '用 -s 静默模式避免进度干扰',
+      '检查响应状态码',
+      '处理 JSON 数据'
+    ],
+    commonMistakes: [
+      '不处理 HTTP 错误',
+      '不验证响应格式'
+    ],
+    relatedCommands: ['cat file | claude -p "query"', 'claude -p "query"']
+  },
+
+  // ===== Modern Slash Commands (斜杠命令) =====
+  {
+    id: 'slash-init',
+    name: '/init',
+    description: '扫描代码库并生成 CLAUDE.md 项目记忆文件',
+    syntax: '/init',
+    example: '/init',
+    output: `Analyzing project structure...
+
+Detected: React 18 + TypeScript + Vite
+Package manager: npm (package-lock.json)
+Found: ESLint config, Tailwind, Vercel deploy
+
+✅ Created CLAUDE.md with:
+- Build / test / lint commands
+- Architecture overview
+- Code style conventions
+
+Tip: review and trim CLAUDE.md so it only contains
+what Claude would otherwise get wrong.`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '在新项目首次使用时运行以建立项目记忆',
+      '生成后人工审查并精简内容',
+      '随项目演进定期重新运行以更新'
+    ],
+    commonMistakes: [
+      '生成后从不审查导致信息过时',
+      '在 CLAUDE.md 中堆砌过多无关内容'
+    ],
+    relatedCommands: ['/memory', 'CLAUDE.md 记忆']
+  },
+  {
+    id: 'slash-memory',
+    name: '/memory',
+    description: '编辑各级 CLAUDE.md 记忆文件',
+    syntax: '/memory',
+    example: '/memory',
+    output: `Select a memory file to edit:
+
+  1. ./CLAUDE.md            (project, checked in)
+  2. ./CLAUDE.local.md      (project, gitignored)
+  3. ~/.claude/CLAUDE.md    (user, all projects)
+
+Opening in your editor...
+Changes take effect in the next message.`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '把团队规范写进项目级 CLAUDE.md',
+      '把个人偏好放进 CLAUDE.local.md（不入库）',
+      '用 # 开头快速向记忆追加一条内容'
+    ],
+    commonMistakes: [
+      '把个人偏好写进团队共享文件',
+      '把会频繁变化的信息硬编码进记忆'
+    ],
+    relatedCommands: ['/init', 'CLAUDE.md 记忆']
+  },
+  {
+    id: 'slash-compact',
+    name: '/compact',
+    description: '总结并压缩当前对话以释放上下文空间',
+    syntax: '/compact [关注重点]',
+    example: '/compact 保留关于鉴权重构的决定',
+    output: `Compacting conversation...
+
+Summarized 42 messages → 1 summary
+Freed ~38k tokens of context
+Kept focus: 鉴权重构的决定
+
+✅ You can keep working with more headroom.`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '在上下文接近上限前主动压缩',
+      '用关注重点参数保留关键决定',
+      '长任务中分阶段压缩而非一次性清空'
+    ],
+    commonMistakes: [
+      '用 /clear 丢弃了仍需要的上下文',
+      '压缩后未确认关键信息是否保留'
+    ],
+    relatedCommands: ['/context', '/clear']
+  },
+  {
+    id: 'slash-context',
+    name: '/context',
+    description: '可视化当前上下文窗口的占用情况',
+    syntax: '/context',
+    example: '/context',
+    output: `Context usage (200k window)
+
+  System prompt + tools   ████░░░░░░░░░░░░  12%
+  CLAUDE.md + memory      ██░░░░░░░░░░░░░░   6%
+  Conversation           ██████████░░░░░░  48%
+  Free                    ░░░░░░░░░░░░░░░░  34%
+
+Tip: run /compact when free space gets low.`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '在长会话中定期查看占用',
+      '占用过高时配合 /compact 使用',
+      '关注记忆文件是否占用过多空间'
+    ],
+    commonMistakes: [
+      '忽视上下文占用导致响应质量下降',
+      '不清楚哪些内容在消耗上下文'
+    ],
+    relatedCommands: ['/compact', '/clear']
+  },
+  {
+    id: 'slash-model',
+    name: '/model',
+    description: '在会话中切换使用的模型',
+    syntax: '/model [opus|sonnet|haiku|model-id]',
+    example: '/model opus',
+    output: `Available models:
+
+  > Opus 4.8     最强推理，适合复杂任务
+    Sonnet 4.6   速度与能力均衡，日常默认
+    Haiku 4.5    最快最省，适合简单任务
+
+✅ Switched to Claude Opus 4.8`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '复杂重构或架构设计用更强模型',
+      '简单批量改动用更快的模型省成本',
+      '根据任务难度动态切换'
+    ],
+    commonMistakes: [
+      '用最强模型处理琐碎任务浪费成本',
+      '用过弱模型处理复杂任务导致返工'
+    ],
+    relatedCommands: ['/config', '扩展思考']
+  },
+  {
+    id: 'slash-config',
+    name: '/config',
+    description: '打开设置界面或直接设置某个配置项',
+    syntax: '/config [key=value]',
+    example: '/config',
+    output: `Settings
+
+  Theme            dark
+  Editor mode      normal        (was /vim)
+  Output style     default
+  Auto-compact     on
+  Notifications    on
+
+Use arrow keys to change, or: /config key=value`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '通过 Editor mode 开启 Vim 编辑（/vim 已移除）',
+      '用 /config key=value 快速修改单项',
+      '团队统一的设置写入 settings.json'
+    ],
+    commonMistakes: [
+      '仍在找已被移除的 /vim 命令',
+      '把项目级设置误改为全局设置'
+    ],
+    relatedCommands: ['/model', '/permissions']
+  },
+  {
+    id: 'slash-permissions',
+    name: '/permissions',
+    description: '管理工具的允许/询问/拒绝规则',
+    syntax: '/permissions',
+    example: '/permissions',
+    output: `Permission rules
+
+  Allow:
+    Read, Edit, Bash(npm run *)
+  Ask:
+    Bash(git push:*)
+  Deny:
+    Bash(rm -rf:*), WebFetch
+
+Mode: default   (Shift+Tab to cycle)
+Edit rules here or in .claude/settings.json`,
+    category: 'slash',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '把安全的高频操作加入 Allow 减少打断',
+      '把危险操作显式加入 Deny',
+      '用 Shift+Tab 在权限模式间快速切换'
+    ],
+    commonMistakes: [
+      '允许范围过宽带来安全风险',
+      '把必要工具误加入 Deny 影响效率'
+    ],
+    relatedCommands: ['计划模式', 'claude --permission-mode']
+  },
+  {
+    id: 'slash-review',
+    name: '/review',
+    description: '审查一个 GitHub 拉取请求(PR)',
+    syntax: '/review [PR编号或URL]',
+    example: '/review 128',
+    output: `Reviewing PR #128: "Add retry to upload"
+
+Changed: 4 files (+182 / -33)
+
+Findings:
+⚠️  src/upload.ts:54 — 重试未设置上限，可能无限循环
+⚠️  src/upload.ts:71 — 错误被吞掉，建议记录日志
+✅ 测试覆盖了主要路径
+
+Overall: 需要小修改后可合并`,
+    category: 'slash',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '合并前用它做一次自动审查',
+      '结合人工审查而非完全替代',
+      '关注边界条件与错误处理'
+    ],
+    commonMistakes: [
+      '只看结论不看具体问题点',
+      '把 /review 用于本地未提交改动'
+    ],
+    relatedCommands: ['/code-review', '/security-review']
+  },
+  {
+    id: 'slash-code-review',
+    name: '/code-review',
+    description: '审查当前工作区改动中的 bug 与可简化点',
+    syntax: '/code-review [low|medium|high] [--fix] [--comment]',
+    example: '/code-review high',
+    output: `Reviewing local diff (effort: high)
+
+src/store/useAppStore.ts
+  🐛 markCommandCompleted 未去重，重复 id 会共享完成状态
+  ♻️  history 截断逻辑可抽成工具函数
+
+Run with --fix to apply, or --comment to post on PR.`,
+    category: 'slash',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '提交前对本地改动做一次审查',
+      '用 --fix 让其直接应用修复',
+      '根据改动规模选择 effort 级别'
+    ],
+    commonMistakes: [
+      '把它当作 bug 猎手以外的全能工具',
+      '不复核 --fix 自动应用的改动'
+    ],
+    relatedCommands: ['/simplify', '/review']
+  },
+  {
+    id: 'slash-security-review',
+    name: '/security-review',
+    description: '对当前分支的待提交改动做安全审查',
+    syntax: '/security-review',
+    example: '/security-review',
+    output: `Scanning pending changes for vulnerabilities...
+
+🔴 High: src/api.ts:22 — 拼接 SQL，存在注入风险
+🟡 Medium: src/config.ts:9 — 硬编码 API key
+✅ 未发现敏感信息泄漏到日志
+
+Recommendations:
+- 使用参数化查询
+- 将密钥移入环境变量`,
+    category: 'slash',
+    difficulty: 'advanced',
+    bestPractices: [
+      '在合并涉及输入处理的改动前运行',
+      '优先修复高危项',
+      '把密钥等敏感信息移出代码'
+    ],
+    commonMistakes: [
+      '忽略中危及以下的告警',
+      '只在上线前才做唯一一次安全检查'
+    ],
+    relatedCommands: ['/review', '/code-review']
+  },
+  {
+    id: 'slash-rewind',
+    name: '/rewind',
+    description: '回退到之前的检查点(代码与/或对话)',
+    syntax: '/rewind   (或连按两次 Esc)',
+    example: '/rewind',
+    output: `Checkpoints (most recent first)
+
+  ● now            current state
+  ○ 3 min ago      edited Terminal.tsx
+  ○ 8 min ago      created commands entries
+  ○ 15 min ago     before refactor
+
+Select restore scope:
+  [1] Code only  [2] Conversation only  [3] Both`,
+    category: 'slash',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '尝试有风险的改动前心里有"可回退"的底',
+      '可只回退代码而保留对话上下文',
+      '连按两次 Esc 是更快的入口'
+    ],
+    commonMistakes: [
+      '把检查点当作 Git 提交的替代品',
+      '回退范围选错（误删了想保留的对话）'
+    ],
+    relatedCommands: ['Esc Esc 检查点', 'claude --continue']
+  },
+  {
+    id: 'slash-usage',
+    name: '/usage',
+    description: '查看本次会话的用量与成本(别名 /cost)',
+    syntax: '/usage',
+    example: '/usage',
+    output: `Session usage
+
+  Model            Opus 4.8
+  Input tokens     128,540
+  Output tokens    24,310
+  Cache read       512,000
+  ─────────────────────────
+  Est. cost        $1.84
+  Duration         42m`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '定期查看以掌握成本',
+      '成本偏高时考虑切换更轻的模型',
+      '利用缓存命中降低开销'
+    ],
+    commonMistakes: [
+      '完全不关注 token 消耗',
+      '长时间用最强模型处理简单任务'
+    ],
+    relatedCommands: ['/model', '/status']
+  },
+  {
+    id: 'slash-doctor',
+    name: '/doctor',
+    description: '诊断 Claude Code 的安装与配置健康状况',
+    syntax: '/doctor',
+    example: '/doctor',
+    output: `Running diagnostics...
+
+✅ Version            up to date
+✅ Auth               logged in
+✅ Network            api reachable
+⚠️  MCP server "db"   failed to start
+✅ Settings           valid JSON
+
+1 warning. See above for details.`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '遇到异常行为时先运行诊断',
+      '根据告警逐项排查',
+      '升级后确认环境正常'
+    ],
+    commonMistakes: [
+      '忽略诊断中的告警继续使用',
+      '不读取具体错误就重装'
+    ],
+    relatedCommands: ['/status', 'claude --version']
+  },
+  {
+    id: 'slash-status',
+    name: '/status',
+    description: '显示版本、模型、账户与连接状态',
+    syntax: '/status',
+    example: '/status',
+    output: `Claude Code status
+
+  Version    latest
+  Model      Opus 4.8
+  Account    you@example.com (Max)
+  Workdir    ~/project
+  MCP        2 connected
+  Output     interactive`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '反馈问题时附上 /status 信息',
+      '确认当前所用模型与目录',
+      '检查 MCP 连接是否正常'
+    ],
+    commonMistakes: [
+      '不确认当前模型就开始重要任务',
+      '在错误的工作目录中操作'
+    ],
+    relatedCommands: ['/doctor', '/usage']
+  },
+  {
+    id: 'slash-export',
+    name: '/export',
+    description: '将当前对话导出为纯文本',
+    syntax: '/export [文件名]',
+    example: '/export session.md',
+    output: `Exporting conversation...
+
+✅ Wrote 36 messages → session.md
+   Included code blocks and tool results
+
+Tip: 用于分享调试过程或留存复盘。`,
+    category: 'slash',
+    difficulty: 'beginner',
+    bestPractices: [
+      '复盘或分享时导出留存',
+      '用描述性文件名便于检索',
+      '导出前注意去除敏感信息'
+    ],
+    commonMistakes: [
+      '导出包含密钥等敏感内容',
+      '文件名无意义难以归档'
+    ],
+    relatedCommands: ['/resume', '/copy']
+  },
+
+  // ===== Advanced Features (高级功能) =====
+  {
+    id: 'feat-subagents',
+    name: '/agents (子代理)',
+    description: '创建与管理拥有独立上下文、可并行工作的子代理',
+    syntax: '/agents   ·   配置目录 .claude/agents/',
+    example: '/agents',
+    output: `Subagents
+
+  > code-reviewer   审查改动，只读
+    test-runner     运行并修复测试
+    + Create new agent
+
+子代理拥有独立上下文，可并行执行，
+主会话只接收它们的最终结论，避免污染主上下文。
+定义文件位于 .claude/agents/<name>。`,
+    category: 'features',
+    difficulty: 'advanced',
+    bestPractices: [
+      '把可并行、范围清晰的工作交给子代理',
+      '给子代理最小必要的工具权限',
+      '让其返回结论而非冗长过程'
+    ],
+    commonMistakes: [
+      '把需要主上下文的任务硬塞给子代理',
+      '赋予过宽的工具权限'
+    ],
+    relatedCommands: ['技能', '自定义斜杠命令']
+  },
+  {
+    id: 'feat-hooks',
+    name: 'Hooks (钩子)',
+    description: '在生命周期事件上自动执行的确定性 Shell 命令',
+    syntax: '.claude/settings.json → hooks   ·   /hooks 查看',
+    example: '/hooks',
+    output: `Configured hooks
+
+  PostToolUse (Write|Edit) → npm run format
+  Stop                     → npm run build
+
+钩子由 harness 确定性执行，Claude 无法跳过。
+常见用途：编辑后自动格式化、提交前校验、
+完成时发送通知。`,
+    category: 'features',
+    difficulty: 'advanced',
+    bestPractices: [
+      '用钩子强制执行格式化/校验等确定性步骤',
+      '保持钩子命令快速，避免拖慢交互',
+      '在 settings.json 中版本化团队钩子'
+    ],
+    commonMistakes: [
+      '把应交给钩子的强约束写进 CLAUDE.md（可能被忽略）',
+      '钩子命令过慢拖累每次编辑'
+    ],
+    relatedCommands: ['技能', '/config']
+  },
+  {
+    id: 'feat-skills',
+    name: 'Agent Skills (技能)',
+    description: '打包的可复用指令，匹配任务时自动调用或用斜杠触发',
+    syntax: '.claude/skills/<name>/SKILL.md   ·   /skills 列表',
+    example: '/skills',
+    output: `Available skills
+
+  /commit-push-pr   提交、推送并开 PR
+  /frontend-design  生成高质量前端界面
+  /deep-research    多源检索并产出带引用报告
+
+技能由带 description 的 SKILL.md 定义；
+可由模型自动调用，也可用 /<name> 手动触发。`,
+    category: 'features',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '把重复的多步工作流沉淀为技能',
+      '写清楚 description 以便正确触发',
+      '有副作用的技能禁用模型自动调用'
+    ],
+    commonMistakes: [
+      'description 含糊导致技能不被触发',
+      '把一次性任务也做成技能'
+    ],
+    relatedCommands: ['自定义斜杠命令', '/agents']
+  },
+  {
+    id: 'feat-plugins',
+    name: 'Plugins (插件与市场)',
+    description: '一键安装打包好的技能、子代理、钩子与 MCP 服务器',
+    syntax: '/plugin   ·   /plugin install <name>@<marketplace>',
+    example: '/plugin install frontend-design@claude-plugins-official',
+    output: `Installing frontend-design@claude-plugins-official...
+
+✅ Added: 1 skill, 2 subagents, 1 hook
+
+Browse more with /plugin
+插件把技能/代理/钩子/MCP 捆绑分发，便于团队共享。`,
+    category: 'features',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '用官方市场发现可复用能力',
+      '只安装需要的插件保持环境精简',
+      '可自建插件在团队内共享'
+    ],
+    commonMistakes: [
+      '安装过多插件造成干扰',
+      '不了解插件引入的权限与行为'
+    ],
+    relatedCommands: ['技能', 'MCP 服务器']
+  },
+  {
+    id: 'feat-mcp',
+    name: 'MCP 服务器',
+    description: '通过模型上下文协议连接外部工具与数据源',
+    syntax: 'claude mcp add <name> -- <command>   ·   /mcp 管理',
+    example: 'claude mcp add github -- npx -y @modelcontextprotocol/server-github',
+    output: `Adding MCP server "github"...
+
+✅ Registered (stdio)
+   Tools: search_repos, get_issue, create_pr ...
+
+Manage & authenticate with /mcp
+MCP 让 Claude 安全地访问数据库、API、文件系统等。`,
+    category: 'features',
+    difficulty: 'advanced',
+    bestPractices: [
+      '只连接可信的 MCP 服务器',
+      '用 /mcp 检查连接与鉴权状态',
+      '按项目/用户范围管理服务器配置'
+    ],
+    commonMistakes: [
+      '连接来源不明的服务器带来安全风险',
+      '启用过多不必要的服务器'
+    ],
+    relatedCommands: ['插件', '/status']
+  },
+  {
+    id: 'feat-plan-mode',
+    name: 'Plan Mode (计划模式)',
+    description: '让 Claude 先给出方案、获批后再动手',
+    syntax: 'Shift+Tab 循环切换  ·  claude --permission-mode plan',
+    example: 'Shift+Tab',
+    output: `Permission mode: plan
+
+在计划模式下：
+- Claude 先调研并提出实现方案
+- 不会直接修改文件
+- 你批准后才进入执行
+
+适合复杂或高风险改动，先对齐再动手。`,
+    category: 'features',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '复杂任务先用计划模式对齐方案',
+      '审阅计划后再批准执行',
+      '用 Shift+Tab 在模式间快速切换'
+    ],
+    commonMistakes: [
+      '高风险改动跳过计划直接执行',
+      '不审阅计划就一路批准'
+    ],
+    relatedCommands: ['/permissions', '扩展思考']
+  },
+  {
+    id: 'feat-thinking',
+    name: 'Extended Thinking (扩展思考)',
+    description: '让模型在回答前进行更深入的推理',
+    syntax: '提示中说 "think" / 切换 Alt+T / 设置思考强度',
+    example: 'think hard about the edge cases before refactoring',
+    output: `Extended thinking: on
+
+模型会在作答前展开更长的推理链，
+更适合架构权衡、棘手 bug、算法设计等。
+
+提示词中加入 "think" 可临时加深思考；
+更高强度可通过设置或 effort 级别调整。`,
+    category: 'features',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '难题（架构/算法/疑难 bug）开启更深思考',
+      '简单任务无需开启以免变慢',
+      '在提示中明确要思考的重点'
+    ],
+    commonMistakes: [
+      '对琐碎任务也强制深度思考',
+      '期望它替代清晰的问题描述'
+    ],
+    relatedCommands: ['/model', '计划模式']
+  },
+  {
+    id: 'feat-claude-md',
+    name: 'CLAUDE.md 记忆',
+    description: '每次会话自动加载的项目记忆，可用 # 快速追加',
+    syntax: 'CLAUDE.md / CLAUDE.local.md   ·   输入以 # 开头追加',
+    example: '# 始终使用 2 空格缩进',
+    output: `Saved to memory (CLAUDE.md):
+  "始终使用 2 空格缩进"
+
+记忆文件在会话开始时自动注入：
+- ./CLAUDE.md         团队共享（入库）
+- ./CLAUDE.local.md   个人私有（gitignore）
+- ~/.claude/CLAUDE.md 所有项目通用
+支持用 @path 内联引用其他文件。`,
+    category: 'features',
+    difficulty: 'beginner',
+    bestPractices: [
+      '只写"不写就会出错"的关键信息',
+      '用 # 在工作流中随手沉淀约定',
+      '团队约定入库、个人偏好放 local'
+    ],
+    commonMistakes: [
+      '把易变信息硬编码进记忆',
+      '记忆冗长稀释了关键指令'
+    ],
+    relatedCommands: ['/memory', '/init']
+  },
+  {
+    id: 'feat-at-mentions',
+    name: '@ 文件引用',
+    description: '在提示中用 @ 直接引用文件或目录',
+    syntax: '@路径   (输入 @ 触发路径自动补全)',
+    example: '解释 @src/store/useAppStore.ts 的状态结构',
+    output: `Referenced: src/store/useAppStore.ts
+
+已读取该文件并纳入上下文。
+@ 支持自动补全文件与目录路径，
+比手动粘贴更精确，也便于一次引用多个文件。`,
+    category: 'features',
+    difficulty: 'beginner',
+    bestPractices: [
+      '用 @ 精确指向相关文件而非泛泛描述',
+      '一次只引用真正需要的文件',
+      '配合补全减少路径输入错误'
+    ],
+    commonMistakes: [
+      '一次性引用过多文件撑爆上下文',
+      '描述模糊不指明具体文件'
+    ],
+    relatedCommands: ['CLAUDE.md 记忆', '/context']
+  },
+  {
+    id: 'feat-custom-commands',
+    name: '自定义斜杠命令',
+    description: '把常用提示保存为可复用的 /命令',
+    syntax: '.claude/commands/<name>.md → /<name>',
+    example: '/fix-issue 128',
+    output: `Created .claude/commands/fix-issue.md
+
+  ---
+  description: 按编号修复 GitHub issue
+  ---
+  读取 issue $ARGUMENTS，定位相关代码并修复，
+  补充测试后开 PR。
+
+之后输入 /fix-issue 128 即可复用，
+$ARGUMENTS 会被替换为你传入的参数。`,
+    category: 'features',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '把高频提示固化为命令统一团队用法',
+      '用 $ARGUMENTS 接收参数提升复用性',
+      '为命令写清晰 description'
+    ],
+    commonMistakes: [
+      '命令职责过宽难以维护',
+      '把有副作用的命令暴露给自动调用'
+    ],
+    relatedCommands: ['技能', '/agents']
+  },
+  {
+    id: 'feat-background',
+    name: '后台任务 (Ctrl+B)',
+    description: '把长耗时命令放到后台运行，不阻塞当前会话',
+    syntax: 'Ctrl+B  ·  /tasks 查看后台任务',
+    example: 'Ctrl+B',
+    output: `Backgrounded: npm run dev
+
+  [bg] dev server starting on :5173 ...
+
+会话不被阻塞，可继续对话；
+任务完成或有输出时会通知你，用 /tasks 查看与管理。`,
+    category: 'features',
+    difficulty: 'intermediate',
+    bestPractices: [
+      '把 dev server、长测试等放到后台',
+      '用 /tasks 跟踪后台任务状态',
+      '需要其输出时再回看'
+    ],
+    commonMistakes: [
+      '把需要即时结果的命令放后台',
+      '忘记后台仍在运行的进程'
+    ],
+    relatedCommands: ['/status', '/usage']
   }
-  return a + b;
-}
-\`\`\``,    category: 'pipeline',    difficulty: 'beginner',    bestPractices: [      '使用双引号包围文本',      '提供明确的分析指令',      '处理特殊字符转义'    ],    commonMistakes: [      '忘记转义特殊字符',      '文本过长导致命令行限制'    ],    relatedCommands: ['claude -p', 'cat file | claude']  },  {    id: 'git-diff-pipe-claude',    name: 'git diff | claude -p "query"',    description: '分析Git差异的管道操作',    syntax: 'git diff [options] | claude -p "[query]"',    example: 'git diff HEAD~1 | claude -p "summarize changes"',    output: `Reading git diff output...
-Files changed: 3
-Insertions: +45
-Deletions: -12
-
-Query: summarize changes
-
-📊 **Change Summary:**
-
-🔄 **Modified Files:**
-1. \`src/components/Header.tsx\` (+15, -3)
-   - Added responsive navigation menu
-   - Improved accessibility attributes
-
-2. \`src/styles/globals.css\` (+25, -5)
-   - Added mobile-first media queries
-   - Updated color scheme variables
-
-3. \`package.json\` (+5, -4)
-   - Updated React to v18.2.0
-   - Added new dependency: @headlessui/react
-
-🎯 **Overall Impact:**
-- Enhanced mobile responsiveness
-- Improved user experience
-- Updated dependencies for better performance
-
-✅ Changes look good and follow best practices!`,    category: 'pipeline',    difficulty: 'intermediate',    bestPractices: [      '使用具体的diff范围',      '结合具体的分析需求',      '检查diff输出大小'    ],    commonMistakes: [      'diff输出过大',      '不指定具体的commit范围'    ],    relatedCommands: ['git log | claude', 'claude -p']  },  {    id: 'ls-pipe-claude',    name: 'ls -la | claude -p "query"',    description: '分析目录结构的管道操作',    syntax: 'ls [options] | claude -p "[query]"',    example: 'ls -la src/ | claude -p "analyze project structure"',    output: `Reading directory listing...
-Directory: src/
-Total items: 12
-
-Query: analyze project structure
-
-📁 **Project Structure Analysis:**
-
-🏗️ **Directory Organization:**
-- \`components/\` - React components (well organized)
-- \`hooks/\` - Custom React hooks
-- \`utils/\` - Utility functions
-- \`styles/\` - CSS and styling files
-- \`types/\` - TypeScript type definitions
-
-📊 **File Distribution:**
-- Components: 8 files (.tsx)
-- Utilities: 4 files (.ts)
-- Styles: 3 files (.css)
-- Types: 2 files (.d.ts)
-
-✅ **Strengths:**
-- Clear separation of concerns
-- Consistent naming conventions
-- Good use of TypeScript
-
-💡 **Suggestions:**
-- Consider adding a \`constants/\` folder
-- Group related components in subdirectories
-- Add \`__tests__/\` folder for unit tests`,    category: 'pipeline',    difficulty: 'beginner',    bestPractices: [      '使用合适的ls选项',      '分析特定目录',      '提供结构化的查询'    ],    commonMistakes: [      '分析根目录导致输出过多',      '不使用具体的分析指令'    ],    relatedCommands: ['find | claude', 'tree | claude']  },  {    id: 'curl-pipe-claude',    name: 'curl url | claude -p "query"',    description: '分析HTTP响应的管道操作',    syntax: 'curl [options] [url] | claude -p "[query]"',    example: 'curl -s https://api.github.com/users/octocat | claude -p "explain this API response"',    output: `Reading HTTP response...
-Status: 200 OK
-Content-Type: application/json
-Response size: 1.2KB
-
-Query: explain this API response
-
-🌐 **API Response Analysis:**
-
-📋 **Response Structure:**
-\`\`\`json
-{
-  "login": "octocat",
-  "id": 1,
-  "avatar_url": "https://github.com/images/error/octocat_happy.gif",
-  "type": "User",
-  "name": "The Octocat",
-  "company": "@github",
-  "public_repos": 8,
-  "followers": 9999,
-  "following": 9
-}
-\`\`\`
-
-🔍 **Key Information:**
-- **User Profile**: GitHub user \"octocat\"
-- **Account Type**: Regular user account
-- **Activity**: 8 public repositories
-- **Social**: 9999 followers, following 9 users
-- **Organization**: Works at GitHub
-
-✅ **API Usage Notes:**
-- This is GitHub's REST API v3
-- No authentication required for public data
-- Rate limit: 60 requests/hour for unauthenticated requests`,    category: 'pipeline',    difficulty: 'intermediate',    bestPractices: [      '使用-s选项避免进度信息',      '检查API响应状态',      '处理JSON格式数据'    ],    commonMistakes: [      '不处理HTTP错误',      '忘记使用静默模式',      '不验证响应格式'    ],    relatedCommands: ['wget | claude', 'claude -p']  }];
+];
 
 export const categories: CommandCategory[] = [
   {
     id: 'basic',
     name: '基础命令',
-    description: 'Claude CLI的基本操作和配置命令',
+    description: 'Claude Code 的基本操作与会话命令',
     icon: '🔧',
     commands: commands.filter(cmd => cmd.category === 'basic')
   },
   {
-    id: 'chat',
-    name: '聊天会话',
-    description: '交互式聊天和会话管理命令',
-    icon: '💬',
-    commands: commands.filter(cmd => cmd.category === 'chat')
-  },
-  {
-    id: 'generation',
-    name: '代码生成',
-    description: '自动生成代码和文本内容',
-    icon: '⚡',
-    commands: commands.filter(cmd => cmd.category === 'generation')
-  },
-  {
-    id: 'analysis',
-    name: '代码分析',
-    description: '分析和审查代码质量',
-    icon: '🔍',
-    commands: commands.filter(cmd => cmd.category === 'analysis')
-  },
-  {
     id: 'flags',
-    name: 'CLI标志',
-    description: 'Claude CLI的命令行标志和选项',
+    name: 'CLI 标志',
+    description: 'Claude Code 的命令行标志与选项',
     icon: '🏁',
     commands: commands.filter(cmd => cmd.category === 'flags')
   },
   {
     id: 'pipeline',
     name: '管道命令',
-    description: '处理管道输入和数据流',
+    description: '处理管道输入与数据流',
     icon: '🔄',
     commands: commands.filter(cmd => cmd.category === 'pipeline')
+  },
+  {
+    id: 'slash',
+    name: '斜杠命令',
+    description: '交互模式中最新的 / 斜杠命令',
+    icon: '⌨️',
+    commands: commands.filter(cmd => cmd.category === 'slash')
+  },
+  {
+    id: 'features',
+    name: '高级功能',
+    description: '子代理、技能、钩子、插件、MCP、计划模式等',
+    icon: '🚀',
+    commands: commands.filter(cmd => cmd.category === 'features')
   }
 ];
 
