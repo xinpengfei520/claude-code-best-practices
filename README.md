@@ -3,8 +3,8 @@
 ![Version](https://img.shields.io/github/v/release/xinpengfei520/claude-code-best-practices?style=flat-square)
 ![License](https://img.shields.io/github/license/xinpengfei520/claude-code-best-practices?style=flat-square)
 ![React](https://img.shields.io/badge/React-18.3.1-blue?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6.2-blue?style=flat-square&logo=typescript)
-![Vite](https://img.shields.io/badge/Vite-6.0.1-646CFF?style=flat-square&logo=vite)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=flat-square&logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-6.3.5-646CFF?style=flat-square&logo=vite)
 
 🌐 **在线预览：** [https://traeclaude-code-best-practicesrmwk-vancexin-vance-xins-projects.vercel.app](https://traeclaude-code-best-practicesrmwk-vancexin-vance-xins-projects.vercel.app)
 
@@ -20,13 +20,14 @@
 
 ## ✨ 功能特色
 
-### 🎯 完整的命令集覆盖
-- **基础命令** (15个) - 核心功能如交互模式、配置管理、更新等
-- **聊天会话** (2个) - 会话管理和保存功能
-- **代码生成** (2个) - 自动生成代码和文本
-- **代码分析** (1个) - 文件和代码质量分析
-- **CLI标志** (14个) - 命令行标志和选项
-- **管道命令** (5个) - 实用的管道操作
+### 🎯 完整的命令集覆盖（60+ 命令 · 5 大分类）
+- 🔧 **基础命令** (14个) - 交互模式、配置管理、更新、认证等核心操作
+- 🏁 **CLI 标志** (15个) - 命令行标志与选项（`--model`、`--permission-mode`、`--print` 等）
+- 🔄 **管道命令** (5个) - 处理管道输入与数据流
+- ⌨️ **斜杠命令** (15个) - 交互模式中最新的 `/` 命令（`/agents`、`/context`、`/rewind`、`/usage`、`/security-review` 等）
+- 🚀 **高级功能** (11个) - 子代理、技能、钩子、插件、MCP、计划模式、扩展思考、CLAUDE.md 记忆、@ 文件引用等
+
+> 命令数据全部集中在 `src/data/commands.ts`，采用数据驱动方式维护，便于持续更新最新特性。
 
 ### 🎨 用户体验
 - **iTerm2风格终端界面** - 真实的命令行体验
@@ -44,11 +45,12 @@
 
 ## 🛠️ 技术栈
 
-- **前端框架：** React 18.3.1 + TypeScript 5.6.2
-- **构建工具：** Vite 6.0.1
-- **样式方案：** Tailwind CSS 3.4.17
-- **状态管理：** Zustand 5.0.2
-- **图标库：** Lucide React 0.468.0
+- **前端框架：** React 18.3.1 + TypeScript 5.8.3
+- **构建工具：** Vite 6.3.5
+- **样式方案：** Tailwind CSS 3.4.17（class 模式暗色主题）
+- **状态管理：** Zustand 5.0.3（持久化到 localStorage）
+- **路由：** React Router DOM 7.3.0
+- **图标库：** Lucide React 0.511.0
 - **代码质量：** ESLint + TypeScript
 - **部署平台：** Vercel
 
@@ -95,32 +97,35 @@ pnpm lint
 
 ### 类型检查
 ```bash
-npm run type-check
+npm run check
 # 或
-pnpm type-check
+pnpm check
 ```
 
 ## 📁 项目结构
 
 ```
 src/
-├── components/          # React 组件
-│   ├── DocumentationPanel.tsx  # 文档面板
-│   ├── Sidebar.tsx            # 侧边栏
-│   ├── Terminal.tsx           # 终端组件
-│   └── Empty.tsx              # 空状态组件
+├── components/               # React 组件
+│   ├── DocumentationPanel.tsx  # 命令文档面板
+│   ├── Sidebar.tsx             # 侧边栏（分类 / 命令 / 进度）
+│   ├── Terminal.tsx            # iTerm2 风格终端组件
+│   └── Empty.tsx               # 空状态组件
 ├── data/
-│   └── commands.ts            # 命令数据定义
+│   └── commands.ts             # 命令数据定义（数据驱动的命令目录）
 ├── hooks/
-│   └── useTheme.ts            # 主题钩子
+│   └── useTheme.ts             # 主题钩子
 ├── pages/
-│   └── Home.tsx               # 主页面
+│   └── Home.tsx                # 主页面
 ├── store/
-│   └── useAppStore.ts         # 应用状态管理
+│   └── useAppStore.ts          # Zustand 状态管理（持久化学习进度）
 ├── styles/
-│   └── terminal.css           # 终端样式
-└── lib/
-    └── utils.ts               # 工具函数
+│   └── terminal.css            # 终端样式
+├── lib/
+│   └── utils.ts                # 工具函数
+├── App.tsx                     # 根组件与路由
+├── main.tsx                    # 应用入口
+└── index.css                   # 全局样式与 Tailwind 指令
 ```
 
 ## 🌐 部署
